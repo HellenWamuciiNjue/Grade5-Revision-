@@ -339,14 +339,15 @@ document.getElementById("dashboard").style.display = "block";
 document.getElementById("quizContainer").style.display = "none";
 }
 function generateNewSet() {
-const wrapper = document.getElementById("questionsWrapper");
-wrapper.innerHTML = "";
-if(generatorBank[currentSubject]) {
-const dataset = generatorBankcurrentSubject;
+    const wrapper = document.getElementById("questionsWrapper");
+    wrapper.innerHTML = "";
+    if(!currentSubject || !generatorBank[currentSubject]) {  
+const dataset = generatorBank[currentSubject]();
 dataset.forEach((item, index) => {
-let box = document.createElement("div");
-box.className = "question-box";
-box.innerHTML = <div class="question-text">Q${index + 1}. ${item.q}</div> <button class="answer-toggle" onclick="toggleAns(this)">Show Answer</button> <div class="answer-text">${item.a}</div>;
+    let box = document.createElement("div");
+    box.className = "question-box";
+    box.innerHTML = `<div class="question-text">Q${index + 1}. ${item.q}</div> <button class="answer-toggle" onclick="toggleAns(this)">Show Answer</button> <div class="answer-text">${item.a}</div>`;
+    
 wrapper.appendChild(box);
 });
 }
