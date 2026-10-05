@@ -269,96 +269,120 @@
         let currentSubject = "";
 
         // Core dynamic question bank configuration schemas
-const generatorBank = {
-    Maths: () => {
-        let questions = [];
-        for(let i = 1; i <= 10; i++) {
-            let randVal = Math.floor(100000 + Math.random() * 899999);
-            let places = ["hundreds", "thousands", "ten thousands", "hundred thousands"];
-            let selectedPlace = places[Math.floor(Math.random() * places.length)];
+        const generatorBank = {
+            Maths: () => {
+                let questions = [];
+                for(let i = 1; i <= 10; i++) {
+                    let randVal = Math.floor(100000 + Math.random() * 899999);
+                    let places = ["hundreds", "thousands", "ten thousands", "hundred thousands"];
+                    let selectedPlace = places[Math.floor(Math.random() * places.length)];
+                    
+                    let numA = Math.floor(10 + Math.random() * 90);
+                    let numB = Math.floor(10 + Math.random() * 90);
+                    
+                    if (i % 2 === 0) {
+                        // Generates place value recognition tasks
+                        questions.push({
+                            q: `What is the place value of the underlined digit in <u>${randVal.toString()[1]}</u>${randVal.toString().substring(2)}?`,
+                            a: selectedPlace
+                        });
+                    } else {
+                        // Generates mental multiplication or product tasks
+                        questions.push({
+                            q: `Work out the product of ${numA} and ${numB}:`,
+                            a: `${numA * numB}`
+                        });
+                    }
+                }
+                return questions;
+            },
+
+            Kiswahili: () => {
+                let questions = [];
+                const msamiati = [
+                    { n: "Mwalimu", k: "Mwanafunzi/Kiranja" },
+                    { n: "Kijana", k: "Mzee" },
+                    { n: "Asubuhi", k: "Jioni" }
+                ];
+
+                for (let item of msamiati) {
+                    questions.push({
+                        q: `Andika kinyume cha neno hili: <b>${item.n}</b>`,
+                        a: item.k
+                    });
+                }
+                return questions;
+            },
+
+            Agriculture: () => {
+                let questions = [];
+                const facts = [
+                    { q: "Which type of soil feels sticky when wet and forms long ribbons?", a: "Clay soil" },
+                    { q: "Name the organic material formed from decayed plant and animal matter that enriches soil.", a: "Humus" },
+                    { q: "Which soil conservation method involves placing dry grass or leaves on the soil surface?", a: "Mulching" }
+                ];
+
+                for (let fact of facts) {
+                    questions.push({
+                        q: fact.q,
+                        a: fact.a
+                    });
+                }
+                return questions;
+            }
+        };
+
+        // NEW: Handles transitions from the dashboard cards to the interactive quiz screen
+        function openQuiz(subjectName) {
+            currentSubject = subjectName;
             
-            let numA = Math.floor(10 + Math.random() * 90);
-            let numB = Math.floor(10 + Math.random() * 90);
+            // Updates the visible title banner on the quiz screen
+            const quizTitleElement = document.getElementById("quizTitle");
+            if (quizTitleElement) {
+                quizTitleElement.innerText = subjectName;
+            }
             
-            if (i % 2 === 0) {
-                // Generates place value recognition tasks
-                questions.push({
-                    q: `What is the place value of the underlined digit in <u>${randVal.toString()[1]}</u>${randVal.toString().substring(2)}?`,
-                    a: selectedPlace
-                });
-            } else {
-                // Generates mental multiplication or product tasks
-                questions.push({
-                    q: `Work out the product of ${numA} and ${numB}:`,
-                    a: `${numA * numB}`
+            // Toggles view displays
+            document.getElementById("dashboard").style.display = "none";
+            document.getElementById("quizContainer").style.display = "block";
+            
+            // Automatically draws the first set of practice questions
+            generateNewSet();
+        }
+
+        function closeQuiz() {
+            document.getElementById("dashboard").style.display = "block";
+            document.getElementById("quizContainer").style.display = "none";
+        }
+
+        function generateNewSet() {
+            const wrapper = document.getElementById("questionsWrapper");
+            wrapper.innerHTML = "";
+            
+            // Fixed validation logic structure
+            if (currentSubject && generatorBank[currentSubject]) {  
+                const dataset = generatorBank[currentSubject]();
+                
+                dataset.forEach((item, index) => {
+                    let box = document.createElement("div");
+                    box.className = "question-box";
+                    box.innerHTML = `<div class="question-text">Q${index + 1}. ${item.q}</div> 
+                                     <button class="answer-toggle" onclick="toggleAns(this)">Show Answer</button> 
+                                     <div class="answer-text">${item.a}</div>`;
+                    
+                    wrapper.appendChild(box);
                 });
             }
         }
-        return questions;
-    },
 
-    Kiswahili: () => {
-        let questions = [];
-        // Fixed syntax: Using proper object literals inside the array bracket
-        const msamiati = [
-            { n: "Mwalimu", k: "Mwanafunzi/Kiranja" },
-            { n: "Kijana", k: "Mzee" },
-            { n: "Asubuhi", k: "Jioni" }
-        ];
-
-        // Loop through each item in the array to build your practice set
-        for (let item of msamiati) {
-            questions.push({
-                q: `Andika kinyume cha neno hili: <b>${item.n}</b>`,
-                a: item.k
-            });
+        function toggleAns(btnElement) {
+            let ansDiv = btnElement.nextElementSibling;
+            if (ansDiv.style.display === "block") {
+                ansDiv.style.display = "none";
+                btnElement.innerText = "Show Answer";
+            } else {
+                ansDiv.style.display = "block";
+                btnElement.innerText = "Hide Answer";
+            }
         }
-        return questions;
-    },
-
-    Agriculture: () => {
-        let questions = [];
-        const facts = [
-            { q: "Which type of soil feels sticky when wet and forms long ribbons?", a: "Clay soil" },
-            { q: "Name the organic material formed from decayed plant and animal matter that enriches soil.", a: "Humus" },
-            { q: "Which soil conservation method involves placing dry grass or leaves on the soil surface?", a: "Mulching" }
-        ];
-
-        for (let fact of facts) {
-            questions.push({
-                q: fact.q,
-                a: fact.a
-            });
-        }
-        return questions;
-    }
-};
-
-function closeQuiz() {
-document.getElementById("dashboard").style.display = "block";
-document.getElementById("quizContainer").style.display = "none";
-}
-function generateNewSet() {
-    const wrapper = document.getElementById("questionsWrapper");
-    wrapper.innerHTML = "";
-    if(!currentSubject || !generatorBank[currentSubject]) {  
-const dataset = generatorBank[currentSubject]();
-dataset.forEach((item, index) => {
-    let box = document.createElement("div");
-    box.className = "question-box";
-    box.innerHTML = `<div class="question-text">Q${index + 1}. ${item.q}</div> <button class="answer-toggle" onclick="toggleAns(this)">Show Answer</button> <div class="answer-text">${item.a}</div>`;
-    
-wrapper.appendChild(box);
-});
-}
-}
-function toggleAns(btnElement) {
-let ansDiv = btnElement.nextElementSibling;
-if(ansDiv.style.display === "block") {
-ansDiv.style.display = "none";
-btnElement.innerText = "Show Answer";
-} else {
-ansDiv.style.display = "block";
-btnElement.innerText = "Hide Answer";
-}
-}
+    </script>
