@@ -5,21 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Uthiru Genesis Grade 5 SBA Study App</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #1e40af;
-            --success: #16a34a;
-            --bg-main: #f8fafc;
-            --card-bg: #ffffff;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
         }
 
         body {
@@ -32,27 +40,34 @@
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 25px 20px;
+            padding: 20px;
             text-align: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         header h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             margin-bottom: 5px;
         }
 
         header p {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             opacity: 0.9;
         }
 
         .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 15px;
+            max-width: 100%;
+            padding: 15px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
         }
 
         .timetable-section {
@@ -60,14 +75,14 @@
         }
 
         .day-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--secondary);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-left: 4px solid var(--primary);
-            padding-left: 8px;
+            padding-left: 12px;
         }
 
         .subject-grid {
@@ -76,58 +91,172 @@
             gap: 12px;
         }
 
+        @media (min-width: 768px) {
+            .subject-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         .subject-card {
             background: var(--card-bg);
             padding: 16px;
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .subject-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
             border-color: var(--primary);
         }
 
+        .subject-card:hover::before {
+            opacity: 1;
+        }
+
+        .sub-info {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
         .sub-info h3 {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: var(--text-dark);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 700;
         }
 
         .sub-info p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-light);
+            margin-bottom: 8px;
         }
 
         .progress-tracker {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-top: 2px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: var(--bg-main);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--primary);
+            display: inline-block;
         }
 
         .start-btn {
-            background-color: #eff6ff;
-            color: var(--primary);
-            padding: 8px 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 10px 16px;
             border-radius: 8px;
             font-size: 0.85rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .composition-box {
+            margin-top: 25px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .composition-box h4 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .composition-box p {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            margin-bottom: 12px;
             font-weight: 600;
         }
 
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        #saveEssayBtn {
+            margin-top: 12px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        #saveEssayBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        /* QUIZ STYLES */
         .quiz-view {
             display: none;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .quiz-header {
@@ -135,166 +264,339 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .back-btn, .gen-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.3s ease;
         }
 
         .back-btn {
-            background: #f1f5f9;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+            background: var(--bg-main);
             color: var(--text-dark);
+        }
+
+        .back-btn:hover {
+            background: var(--border);
+            transform: translateY(-2px);
         }
 
         .gen-btn {
             background: var(--success);
             color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+        }
+
+        .gen-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        #quizTitle {
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
         }
 
         .question-box {
-            background: #f8fafc;
-            border-radius: 10px;
+            background: var(--bg-main);
+            border-radius: 12px;
             padding: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             border-left: 4px solid var(--primary);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .question-text {
             font-weight: 600;
             margin-bottom: 10px;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .question-image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
 
         .answer-input {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px;
             margin: 10px 0;
-            border: 2px solid #cbd5e1;
+            border: 2px solid var(--border);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.3s ease;
         }
 
         .answer-input:focus {
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .answer-input:disabled {
+            background-color: var(--bg-main);
+            cursor: not-allowed;
         }
 
         .feedback-box {
             margin-top: 10px;
-            padding: 10px 14px;
+            padding: 12px 14px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             display: none;
+            animation: slideIn 0.3s ease;
         }
 
         .feedback-correct {
-            background-color: #f0fdf4;
+            background-color: #ecfdf5;
             color: var(--success);
-            border: 1px solid var(--success);
+            border: 2px solid var(--success);
         }
 
         .feedback-incorrect {
             background-color: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #dc2626;
+            color: var(--danger);
+            border: 2px solid var(--danger);
         }
 
         .submit-quiz-btn {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
             width: 100%;
             padding: 14px;
             border-radius: 12px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 15px;
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s ease;
         }
 
-        .submit-quiz-btn:hover {
-            background-color: var(--secondary);
+        .submit-quiz-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .submit-quiz-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* SCORE CARD STYLES */
+        .score-card {
+            display: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .score-card.show {
+            display: block;
+        }
+
+        .score-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .score-details {
+            font-size: 1.1rem;
+            margin: 15px 0;
+        }
+
+        .performance-message {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+
+        .retry-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            .day-title {
+                font-size: 0.95rem;
+            }
+
+            .quiz-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .back-btn, .gen-btn {
+                width: 100%;
+            }
+
+            #quizTitle {
+                width: 100%;
+            }
+
+            .score-circle {
+                width: 100px;
+                height: 100px;
+                font-size: 2rem;
+            }
+        }
+
+        .loading-animation {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>UTHIRU GENESIS SCHOOLS</h1>
+        <h1>🎓 UTHIRU GENESIS SCHOOLS</h1>
         <p>Grade 5 KNEC SBA Term 3 Revision App</p>
     </header>
 
     <div class="container">
+        <!-- DASHBOARD -->
         <div id="dashboard">
             <div class="timetable-section">
-                <div class="day-title">Grade 5 Active Revision Subjects</div>
+                <div class="day-title">📚 Grade 5 Active Revision Subjects</div>
                 <div class="subject-grid">
-                    <div class="subject-card" onclick="openQuiz('English')">
+                    <div class="subject-card">
                         <div class="sub-info">
                             <h3>English (Language)</h3>
                             <p>Reading Comprehension & Grammar</p>
-                            <p class="progress-tracker" id="prog-English">Last Score: 0 / 0</p>
+                            <p class="progress-tracker" id="prog-English">0 / 0</p>
                         </div>
-                        <div class="start-btn">Practice</div>
+                        <button class="start-btn" onclick="startQuizAnimation('English')">▶ Start Practice</button>
                     </div>
 
-                    <div class="subject-card" onclick="openQuiz('CRE')">
+                    <div class="subject-card">
                         <div class="sub-info">
                             <h3>C.R.E.</h3>
-                            <p>Christian Religious Education Tasks</p>
-                            <p class="progress-tracker" id="prog-CRE">Last Score: 0 / 0</p>
+                            <p>Christian Religious Education</p>
+                            <p class="progress-tracker" id="prog-CRE">0 / 0</p>
                         </div>
-                        <div class="start-btn">Practice</div>
+                        <button class="start-btn" onclick="startQuizAnimation('CRE')">▶ Start Practice</button>
                     </div>
 
-                    <div class="subject-card" onclick="openQuiz('SocialStudies')">
+                    <div class="subject-card">
                         <div class="sub-info">
                             <h3>Social Studies</h3>
-                            <p>Pala Area Map & Country Demographics</p>
-                            <p class="progress-tracker" id="prog-SocialStudies">Last Score: 0 / 0</p>
+                            <p>Kenya & Pala Area Geography</p>
+                            <p class="progress-tracker" id="prog-SocialStudies">0 / 0</p>
                         </div>
-                        <div class="start-btn">Practice</div>
+                        <button class="start-btn" onclick="startQuizAnimation('SocialStudies')">▶ Start Practice</button>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top: 20px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px dashed var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 6px;">✍️ Task 5: English Creative Composition Board</h4>
-                <p style="font-size: 0.85rem; color: var(--text-dark); margin-bottom: 10px; font-weight: 600;">
-                    Write a composition about a time when you solved a problem. Describe the problem, what you did, and how you felt after solving it.
-                </p>
-                <textarea id="nadiaComposition" style="width: 100%; height: 140px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; resize: none; outline: none;" placeholder="Write your story here..."></textarea>
-                <button id="saveEssayBtn" style="margin-top: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer; font-weight: 700;">Save Story</button>
+            <!-- COMPOSITION SECTION -->
+            <div class="composition-box">
+                <h4>✍️ Task 5: English Creative Composition</h4>
+                <p>Write about a time when you solved a problem. Describe the problem, what you did, and how you felt.</p>
+                <textarea id="nadiaComposition" placeholder="Write your story here..."></textarea>
+                <button id="saveEssayBtn">💾 Save Story to Memory</button>
             </div>
         </div>
 
+        <!-- QUIZ CONTAINER -->
         <div id="quizContainer" class="quiz-view">
-            <div class="quiz-header">
-                <button class="back-btn" onclick="closeQuiz()">⬅ Back</button>
-                <h2 id="quizTitle">Subject</h2>
-                <button class="gen-btn" onclick="generateNewSet()">🔄 Reset Layout</button>
+            <!-- SCORE CARD (shown after grading) -->
+            <div id="scoreCard" class="score-card">
+                <h2>Assessment Complete! 🎉</h2>
+                <div class="score-circle" id="scoreValue">0/0</div>
+                <div class="score-details">
+                    <strong id="scoreText">You scored 0 out of 0</strong>
+                </div>
+                <div class="performance-message" id="performanceMsg"></div>
+                <button class="retry-btn" onclick="retryQuiz()">↻ Try Again</button>
+                <button class="retry-btn" style="background: rgba(255,255,255,0.2); color: white; margin-left: 10px;" onclick="closeQuiz()">⬅ Back to Menu</button>
             </div>
-            <div id="questionsWrapper"></div>
-            <button id="masterSubmitBtn" class="submit-quiz-btn" onclick="gradeCurrentQuiz()">Finish & Grade Exam</button>
+
+            <!-- QUIZ CONTENT (shown while taking quiz) -->
+            <div id="quizContent">
+                <div class="quiz-header">
+                    <button class="back-btn" onclick="closeQuiz()">⬅ Back</button>
+                    <h2 id="quizTitle">Subject</h2>
+                    <button class="gen-btn" onclick="generateNewSet()">🔄 Reload</button>
+                </div>
+                <div id="questionsWrapper"></div>
+                <button id="masterSubmitBtn" class="submit-quiz-btn" onclick="gradeCurrentQuiz()">✓ Finish & Grade Exam</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEYS = {
-            progress: 'nadiaProgress',
-            essay: 'nadiaEssay'
-        };
-
+        const STORAGE_KEYS = { progress: 'nadiaProgress', essay: 'nadiaEssay' };
         const defaultProgress = { English: 0, CRE: 0, SocialStudies: 0 };
         let currentSubject = '';
         let activeQuestionsCache = [];
@@ -303,10 +605,8 @@
         function safeLoadJson(key, fallback) {
             try {
                 const raw = localStorage.getItem(key);
-                if (!raw) return fallback;
-                const parsed = JSON.parse(raw);
-                return parsed && typeof parsed === 'object' ? parsed : fallback;
-            } catch (error) {
+                return (raw && JSON.parse(raw)) || fallback;
+            } catch (e) {
                 return fallback;
             }
         }
@@ -327,80 +627,127 @@
             if (!student || !expected) return false;
 
             const choices = expected.split('/').map(choice => normalizeAnswer(choice));
-            if (choices.some(choice => choice === student || student.includes(choice) || choice.includes(student))) {
-                return true;
-            }
-
-            if (student.includes(expected) || expected.includes(student)) {
-                return true;
-            }
-
-            return false;
+            return choices.some(choice => choice === student || student.includes(choice) || choice.includes(student));
         }
 
         const generatorBank = {
             English: () => [
-                { q: '1. During the cleaning activity, the pupils collected __________.', a: 'dry leaves, plastic bottles, and papers / dry leaves / plastic bottles / papers' },
-                { q: '2. Why did Moraa empty the old tin?', a: 'because stagnant water could attract mosquitoes / to prevent mosquitoes / stagnant water attracts mosquitoes' },
-                { q: '3. What is likely to happen if the pupils continue keeping the school clean every day?', a: 'the compound will always remain clean / it will remain clean / the school will stay clean' },
-                { q: '4. The word stagnant means:', a: 'standing still / not moving / still water' },
-                { q: '5. Where did Lekupe spend his school holiday?', a: 'in the countryside / at his grandmother\'s home / countryside' },
-                { q: '6. What can we learn about Lekupe from the passage?', a: 'he is responsible / responsible / he is hardworking' },
-                { q: '7. What would most likely happen if Lekupe had not watered the vegetables?', a: 'the vegetables would have dried up and died / they would dry and die / the plants would die' },
-                { q: '8. The word immediately means:', a: 'quickly / at once / fast' },
-                { q: '9. Why did Naisula call the number on the puppy\'s collar?', a: 'she wanted to find the owner / to contact the owner / to see the owner' },
-                { q: '10. What would probably have happened if the puppy had no collar?', a: 'the owner would not be found / it would remain lost / the owner would never know' },
-                { q: '11. Which sentence is true about Naisula?', a: 'she took the puppy to the owner\'s home / she found it and took it home / she returned it to the owner' },
-                { q: '12. What lesson do we learn from Naisula\'s actions?', a: 'kindness to animals / being helpful / caring for animals' },
-                { q: '13. Why did Mukami suggest making a watering timetable?', a: 'so that trees would stay healthy / so trees would remain healthy / to care for the trees' },
-                { q: '14. What is likely to happen if the learners continue caring for the trees?', a: 'the school will have shade for rest / the place will be shaded / the trees will grow well' },
-                { q: '15. The word seedlings refers to:', a: 'young trees / small plants / young plants' },
-                { q: '16. Why did the teacher warn learners not to step on the young plants?', a: 'to prevent them from breaking / so they would not be crushed / to protect them' },
-                { q: '17. The children stayed indoors _________ it was raining heavily.', a: 'because / for / as' },
-                { q: '18. Mary wanted to play outside, _________ her mother asked her to finish her homework.', a: 'but / however' },
-                { q: '19. There were _________ pupils waiting outside the office.', a: 'a lot of / many' },
+                { q: '1. During the cleaning activity, the pupils collected __________', a: 'dry leaves, plastic bottles, and papers / dry leaves / plastic bottles' },
+                { q: '2. Why did Moraa empty the old tin?', a: 'because stagnant water could attract mosquitoes / to prevent mosquitoes' },
+                { q: '3. What is likely to happen if the pupils continue keeping the school clean?', a: 'the compound will always remain clean / it will stay clean' },
+                { q: '4. The word "stagnant" means:', a: 'standing still / not flowing / motionless' },
+                { q: '5. Where did Lekupe spend his school holiday?', a: 'in the countryside / at his grandmother\'s home' },
+                { q: '6. What can we learn about Lekupe?', a: 'he is responsible / hardworking / helpful' },
+                { q: '7. What would happen if Lekupe had not watered the vegetables?', a: 'the vegetables would have dried up / they would die' },
+                { q: '8. The word "immediately" means:', a: 'quickly / at once / right away' },
+                { q: '9. Why did Naisula call the number on the puppy\'s collar?', a: 'to find the owner / to contact the owner' },
+                { q: '10. What would happen if the puppy had no collar?', a: 'the owner would not be found / it would remain lost' },
+                { q: '11. Which sentence is true about Naisula?', a: 'she took the puppy to the owner / she was kind' },
+                { q: '12. What lesson do we learn from Naisula?', a: 'kindness to animals / being helpful / caring' },
+                { q: '13. Why did Mukami suggest a watering timetable?', a: 'so trees would stay healthy / to care for the trees' },
+                { q: '14. What happens if learners continue caring for trees?', a: 'the school will have shade / the place will be shaded' },
+                { q: '15. "Seedlings" refers to:', a: 'young trees / small plants / young plants' },
+                { q: '16. Why warn learners not to step on young plants?', a: 'to prevent them from breaking / to protect them' },
+                { q: '17. The children stayed indoors _________ it was raining.', a: 'because / for / as' },
+                { q: '18. Mary wanted to play, _________ her mother asked her to finish homework.', a: 'but / however' },
+                { q: '19. There were _________ pupils waiting outside.', a: 'a lot of / many' },
                 { q: '20. Please add _________ salt to the soup.', a: 'a little / little' },
-                { q: '21. This is the _________ exciting book I have ever read.', a: 'most / the most' },
+                { q: '21. This is the _________ exciting book I have read.', a: 'most / the most' },
                 { q: '22. A car is usually _________ expensive than a bicycle.', a: 'more / much more' },
-                { q: '23. We saw a _________ of birds flying over the trees.', a: 'flock / group of birds' },
-                { q: '24. The farmer saw a _________ of cattle near the river.', a: 'herd / group of cattle' },
-                { q: '25. Jane stood before the class and introduced _________.', a: 'herself / herself to the class' },
-                { q: '26. The pupils cleaned the classroom by _________.', a: 'themselves / themselves' },
-                { q: '27. This pencil belongs to me. It is _________ pencil.', a: 'my / my pencil' },
-                { q: '28. Peter hurt _________ hand while playing.', a: 'his / his hand' },
+                { q: '23. We saw a _________ of birds flying.', a: 'flock / group' },
+                { q: '24. The farmer saw a _________ of cattle.', a: 'herd / group' },
+                { q: '25. Jane introduced _________', a: 'herself / herself to the class' },
+                { q: '26. The pupils cleaned the classroom by _________', a: 'themselves' },
+                { q: '27. This pencil is _________ pencil.', a: 'my / my pencil' },
+                { q: '28. Peter hurt _________ hand.', a: 'his / his hand' },
                 { q: '29. The children _________ reading when the teacher entered.', a: 'were / were reading' },
-                { q: '30. Every morning, our class _________ the day with a prayer.', a: 'begins / begins the day' }
+                { q: '30. Every morning, our class _________ the day with prayer.', a: 'begins / starts' }
             ],
 
             CRE: () => [
-                { q: 'Who built an ark by God\'s command to survive the great flood with his family?', a: 'Noah' },
-                { q: 'List one fruit of the Holy Spirit according to Galatians 5:22-23.', a: 'love / joy / peace / patience / kindness / goodness / faithfulness / gentleness / self-control' },
-                { q: 'Name the mountain where Moses received the Ten Commandments from God.', a: 'Mount Sinai' },
-                { q: 'Which Christian value describes being truthful and sincere in all actions?', a: 'Honesty' },
+                { q: 'Who built an ark by God\'s command?', a: 'Noah' },
+                { q: 'List one fruit of the Holy Spirit (Galatians 5:22-23).', a: 'love / joy / peace / patience / kindness / goodness / faithfulness / gentleness / self-control' },
+                { q: 'Name the mountain where Moses received the Ten Commandments.', a: 'Mount Sinai' },
+                { q: 'Which Christian value means being truthful and sincere?', a: 'Honesty' },
                 { q: 'What was the name of Abraham\'s wife?', a: 'Sarah' },
                 { q: 'Where was Jesus Christ born?', a: 'Bethlehem' },
                 { q: 'Who was the first king of Israel?', a: 'Saul' },
-                { q: 'How many disciples did Jesus choose to follow Him?', a: '12' },
-                { q: 'What is the first book of the Old Testament in the Holy Bible?', a: 'Genesis' },
-                { q: 'Which miracle did Jesus perform at the wedding in Cana of Galilee?', a: 'turning water into wine / water into wine' }
+                { q: 'How many disciples did Jesus choose?', a: '12' },
+                { q: 'What is the first book of the Old Testament?', a: 'Genesis' },
+                { q: 'Which miracle did Jesus perform at Cana of Galilee?', a: 'turning water into wine / water into wine' }
             ],
 
             SocialStudies: () => [
-                { q: 'Pala Area Map (Q1): List one natural resource found in the area.', a: 'rivers / forests / soil / minerals / water' },
-                { q: 'Pala Area Map (Q2): State one use of the river in the area.', a: 'watering crops / fishing / transport / drinking water' },
-                { q: 'Pala Area Map (Q3): Give one reason why people settle near a river.', a: 'easy water supply / farming / transport' },
-                { q: 'Climate Systems (Q4): Rain received is below 250 mm per year, skies are clear and hot during the day. What type of climate is this?', a: 'hot and dry / desert climate / arid climate' },
-                { q: 'Civic Awareness (Q5): State one major effect of high population density in Kenya.', a: 'pressure on resources / overcrowding / unemployment / poor housing' },
-                { q: 'Traditional Systems (Q6): Give one method of instruction used in African traditional education.', a: 'apprenticeship / storytelling / demonstration / oral teaching' },
-                { q: 'Kenya Map (Q8): Which neighbouring country is found to the north of Kenya?', a: 'Ethiopia / ethiopia' },
-                { q: 'Kenya Map (Q9): Which country is found to the south of Kenya?', a: 'Tanzania / tanzania' },
-                { q: 'Kenya Map (Q10): Which ocean borders the east of Kenya?', a: 'Indian Ocean / indian ocean' },
-                { q: 'Transport Safety (Q12): Apart from wearing helmets, what other safety precaution should motorcycle riders take?', a: 'observe traffic rules / follow road signs / drive carefully / use headlights' },
-                { q: 'Governance (Q14): State one function of the council of elders among the Ameru.', a: 'settling disputes / making laws / advising leaders / protecting community' },
-                { q: 'National Cohesion (Q15): Apart from national day celebrations, identify one factor that promotes national unity in Kenya.', a: 'national language / education system / sports / common citizenship' },
-                { q: 'Human Rights (Q16): List one basic human right guaranteed to children in Kenya.', a: 'right to education / right to healthcare / right to protection / right to food' }
+                {
+                    q: '<img src="pala-map.png.jpeg" class="question-image" alt="Pala Area Map" /><b>Q1:</b> List one natural resource found in the Pala area.',
+                    a: 'rivers / forests / soil / water / minerals'
+                },
+                {
+                    q: '<img src="pala-map.png.jpeg" class="question-image" alt="Pala Area Map" /><b>Q2:</b> State one use of the river in the area.',
+                    a: 'watering crops / fishing / transport / drinking water'
+                },
+                {
+                    q: '<img src="pala-map.png.jpeg" class="question-image" alt="Pala Area Map" /><b>Q3:</b> Give one reason why people settle near a river.',
+                    a: 'easy water supply / farming / transport / fertile soil'
+                },
+                {
+                    q: '<b>Q4:</b> Rain received is below 250 mm yearly. What type of climate is this?',
+                    a: 'hot and dry / desert / arid / semi-arid'
+                },
+                {
+                    q: '<b>Q5:</b> State one major effect of high population density in Kenya.',
+                    a: 'pressure on resources / overcrowding / unemployment / poor housing'
+                },
+                {
+                    q: '<b>Q6:</b> Give one method of instruction in African traditional education.',
+                    a: 'apprenticeship / storytelling / demonstration / oral teaching / observation'
+                },
+                {
+                    q: '<img src="kenya-map.png.PNG" class="question-image" alt="Kenya Map" /><b>Q8:</b> Which country borders Kenya to the north?',
+                    a: 'Ethiopia / ethiopia'
+                },
+                {
+                    q: '<img src="kenya-map.png.PNG" class="question-image" alt="Kenya Map" /><b>Q9:</b> Which country is found to the south of Kenya?',
+                    a: 'Tanzania / tanzania'
+                },
+                {
+                    q: '<img src="kenya-map.png.PNG" class="question-image" alt="Kenya Map" /><b>Q10:</b> Which ocean borders the east of Kenya?',
+                    a: 'Indian Ocean / indian ocean'
+                },
+                {
+                    q: '<img src="motorcycle-rider.PNG" class="question-image" alt="Motorcycle Rider" /><b>Q12:</b> Apart from helmets, what other safety precaution should riders take?',
+                    a: 'observe traffic rules / follow road signs / drive carefully / use lights'
+                },
+                {
+                    q: '<b>Q14:</b> State one function of the council of elders (Njuri Ncheke).', 
+                    a: 'settling disputes / making laws / advising leaders / protecting community'
+                },
+                {
+                    q: '<b>Q15:</b> What other factor promotes national unity besides celebrations?',
+                    a: 'national language / education system / sports / common citizenship'
+                },
+                {
+                    q: '<b>Q16:</b> List one basic human right guaranteed to children in Kenya.',
+                    a: 'right to education / healthcare / protection / food / shelter'
+                }
             ]
         };
+
+        function startQuizAnimation(subject) {
+            currentSubject = subject;
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('scoreCard').classList.remove('show');
+            document.getElementById('quizContent').style.display = 'block';
+            
+            const quizTitle = document.getElementById('quizTitle');
+            quizTitle.innerHTML = `<span class="loading-animation"></span> Loading ${subject}...`;
+            
+            setTimeout(() => {
+                quizTitle.textContent = subject;
+                generateNewSet();
+            }, 800);
+        }
 
         function refreshDashboardUI() {
             Object.keys(defaultProgress).forEach(subject => {
@@ -408,25 +755,10 @@
                 if (!element) return;
 
                 const totalQuestions = generatorBank[subject] ? generatorBank[subject]().length : 0;
-                element.innerText = `Last Score: ${studyProgress[subject]} / ${totalQuestions}`;
-                element.style.color = (studyProgress[subject] >= totalQuestions && totalQuestions > 0) ? 'var(--success)' : 'var(--text-light)';
+                const score = studyProgress[subject];
+                element.textContent = `${score} / ${totalQuestions}`;
+                element.style.color = (score >= totalQuestions && totalQuestions > 0) ? 'var(--success)' : 'var(--primary)';
             });
-
-            const essayBox = document.getElementById('nadiaComposition');
-            if (essayBox && localStorage.getItem(STORAGE_KEYS.essay)) {
-                essayBox.value = localStorage.getItem(STORAGE_KEYS.essay);
-            }
-        }
-
-        function openQuiz(subjectName) {
-            currentSubject = subjectName;
-            const quizTitleElement = document.getElementById('quizTitle');
-            if (quizTitleElement) {
-                quizTitleElement.innerText = subjectName;
-            }
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('quizContainer').style.display = 'block';
-            generateNewSet();
         }
 
         function closeQuiz() {
@@ -481,7 +813,7 @@
                     feedbackElement.innerHTML = '✓ Correct!';
                 } else {
                     feedbackElement.className = 'feedback-box feedback-incorrect';
-                    feedbackElement.innerHTML = `✗ Incorrect. Correct answer: <b>${item.a}</b>`;
+                    feedbackElement.innerHTML = `✗ Incorrect. Correct: <b>${item.a}</b>`;
                 }
             });
 
@@ -491,14 +823,47 @@
                 refreshDashboardUI();
             }
 
-            document.getElementById('masterSubmitBtn').style.display = 'none';
-            alert(`Assessment Complete!\nNadia scored: ${correctCount} out of ${totalQuestions} in ${currentSubject}.`);
+            showScoreCard(correctCount, totalQuestions);
+        }
+
+        function showScoreCard(score, total) {
+            const scoreCard = document.getElementById('scoreCard');
+            const quizContent = document.getElementById('quizContent');
+            
+            quizContent.style.display = 'none';
+            scoreCard.classList.add('show');
+
+            document.getElementById('scoreValue').textContent = `${score}/${total}`;
+            document.getElementById('scoreText').textContent = `You scored ${score} out of ${total}`;
+
+            const percentage = Math.round((score / total) * 100);
+            let message = '';
+
+            if (percentage === 100) {
+                message = '🏆 Perfect! You\'re a star student!';
+            } else if (percentage >= 80) {
+                message = '⭐ Excellent work! Keep it up!';
+            } else if (percentage >= 60) {
+                message = '👍 Good effort! Review the weak areas.';
+            } else if (percentage >= 40) {
+                message = '📚 Need more practice. Keep learning!';
+            } else {
+                message = '💪 Don\'t give up! Try again and learn more.';
+            }
+
+            document.getElementById('performanceMsg').textContent = message;
+        }
+
+        function retryQuiz() {
+            document.getElementById('scoreCard').classList.remove('show');
+            document.getElementById('quizContent').style.display = 'block';
+            generateNewSet();
         }
 
         document.getElementById('saveEssayBtn')?.addEventListener('click', () => {
             const essayText = document.getElementById('nadiaComposition')?.value || '';
             localStorage.setItem(STORAGE_KEYS.essay, essayText);
-            alert('Story essay saved safely to Nadia\'s phone memory!');
+            alert('✓ Story essay saved safely to Nadia\'s phone memory!');
         });
 
         window.addEventListener('load', () => {
@@ -507,6 +872,14 @@
             const essayBox = document.getElementById('nadiaComposition');
             if (essayBox) {
                 essayBox.value = localStorage.getItem(STORAGE_KEYS.essay) || '';
+            }
+        });
+
+        // Prevent accidental navigation away
+        window.addEventListener('beforeunload', (e) => {
+            const essayText = document.getElementById('nadiaComposition')?.value;
+            if (essayText && essayText.trim().length > 0) {
+                localStorage.setItem(STORAGE_KEYS.essay, essayText);
             }
         });
     </script>
