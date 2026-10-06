@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Uthiru Genesis Grade 5 SBA Study App</title>
     <style>
         :root {
@@ -36,7 +36,7 @@
             text-align: center;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
         header h1 {
@@ -229,15 +229,12 @@
     </style>
 </head>
 <body>
-
     <header>
         <h1>UTHIRU GENESIS SCHOOLS</h1>
         <p>Grade 5 KNEC SBA Term 3 Revision App</p>
     </header>
 
     <div class="container">
-        
-        <!-- MAIN DASHBOARD COMPONENT -->
         <div id="dashboard">
             <div class="timetable-section">
                 <div class="day-title">Grade 5 Active Revision Subjects</div>
@@ -246,41 +243,41 @@
                         <div class="sub-info">
                             <h3>English (Language)</h3>
                             <p>Reading Comprehension & Grammar</p>
-                            <p class="progress-tracker" id="prog-English">Last Score: 0 / 30</p>
+                            <p class="progress-tracker" id="prog-English">Last Score: 0 / 0</p>
                         </div>
                         <div class="start-btn">Practice</div>
                     </div>
+
                     <div class="subject-card" onclick="openQuiz('CRE')">
                         <div class="sub-info">
                             <h3>C.R.E.</h3>
                             <p>Christian Religious Education Tasks</p>
-                            <p class="progress-tracker" id="prog-CRE">Last Score: 0 / 10</p>
+                            <p class="progress-tracker" id="prog-CRE">Last Score: 0 / 0</p>
                         </div>
                         <div class="start-btn">Practice</div>
                     </div>
+
                     <div class="subject-card" onclick="openQuiz('SocialStudies')">
                         <div class="sub-info">
                             <h3>Social Studies</h3>
                             <p>Pala Area Map & Country Demographics</p>
-                            <p class="progress-tracker" id="prog-SocialStudies">Last Score: 0 / 13</p>
+                            <p class="progress-tracker" id="prog-SocialStudies">Last Score: 0 / 0</p>
                         </div>
                         <div class="start-btn">Practice</div>
                     </div>
                 </div>
             </div>
 
-            <!-- TASK 5: COMPOSITION SECTION WRITING BOARD -->
             <div style="margin-top: 20px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px dashed var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                 <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 6px;">✍️ Task 5: English Creative Composition Board</h4>
                 <p style="font-size: 0.85rem; color: var(--text-dark); margin-bottom: 10px; font-weight: 600;">
                     Write a composition about a time when you solved a problem. Describe the problem, what you did, and how you felt after solving it.
                 </p>
-                <textarea id="nadiaComposition" style="width: 100%; height: 140px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; resize: none; outline: none; font-family: inherit;" placeholder="Nadia can type her beautiful story essay right here..."></textarea>
-                <button onclick="localStorage.setItem('nadiaEssay', document.getElementById('nadiaComposition').value); alert('Story essay saved safely to Nadia\'s phone memory!')" style="margin-top: 8px; background: var(--success); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: block; margin-left: auto;">💾 Save Essay Progress</button>
+                <textarea id="nadiaComposition" style="width: 100%; height: 140px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; resize: none; outline: none;" placeholder="Write your story here..."></textarea>
+                <button id="saveEssayBtn" style="margin-top: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer; font-weight: 700;">Save Story</button>
             </div>
         </div>
 
-        <!-- ACTIVE QUIZ CONTAINER COMPONENT -->
         <div id="quizContainer" class="quiz-view">
             <div class="quiz-header">
                 <button class="back-btn" onclick="closeQuiz()">⬅ Back</button>
@@ -290,221 +287,228 @@
             <div id="questionsWrapper"></div>
             <button id="masterSubmitBtn" class="submit-quiz-btn" onclick="gradeCurrentQuiz()">Finish & Grade Exam</button>
         </div>
-
     </div>
-    <script>
-        let currentSubject = "";
-        let activeQuestionsCache = [];
 
-        let studyProgress = { English: 0, CRE: 0, SocialStudies: 0 };
-        
-        if (localStorage.getItem("nadiaProgress")) {
-            studyProgress = JSON.parse(localStorage.getItem("nadiaProgress"));
+    <script>
+        const STORAGE_KEYS = {
+            progress: 'nadiaProgress',
+            essay: 'nadiaEssay'
+        };
+
+        const defaultProgress = { English: 0, CRE: 0, SocialStudies: 0 };
+        let currentSubject = '';
+        let activeQuestionsCache = [];
+        let studyProgress = { ...defaultProgress };
+
+        function safeLoadJson(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                const parsed = JSON.parse(raw);
+                return parsed && typeof parsed === 'object' ? parsed : fallback;
+            } catch (error) {
+                return fallback;
+            }
+        }
+
+        function reloadProgress() {
+            const saved = safeLoadJson(STORAGE_KEYS.progress, defaultProgress);
+            studyProgress = { ...defaultProgress, ...saved };
+        }
+
+        function normalizeAnswer(value) {
+            return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        function answerIsCorrect(studentAnswer, correctAnswer) {
+            const student = normalizeAnswer(studentAnswer);
+            const expected = normalizeAnswer(correctAnswer);
+
+            if (!student || !expected) return false;
+
+            const choices = expected.split('/').map(choice => normalizeAnswer(choice));
+            if (choices.some(choice => choice === student || student.includes(choice) || choice.includes(student))) {
+                return true;
+            }
+
+            if (student.includes(expected) || expected.includes(student)) {
+                return true;
+            }
+
+            return false;
         }
 
         const generatorBank = {
-            English: () => {
-                return [
-                    { q: `<b>Read Passage 1 (Green Valley School):</b><br>1. During the cleaning activity, the pupils collected __________.`, a: "dry leaves, plastic bottles, and papers / dry leaves / plastic bottles / papers" },
-                    { q: `<b>Passage 1 Challenge:</b><br>2. Why did Moraa empty the old tin?`, a: "because stagnant water could attract mosquitoes / stagnant water could attract mosquitoes / prevent mosquitoes" },
-                    { q: `<b>Passage 1 Challenge:</b><br>3. What is likely to happen if the pupils continue keeping the school clean every day?`, a: "the compound will always remain clean / keep clean / clean and safe" },
-                    { q: `<b>Passage 1 Vocabulary:</b><br>4. The word <b>"stagnant"</b> as used in the passage means:<br>Type either: <b>A. flowing quickly</b>, <b>B. standing still</b>, or <b>C. full of water</b>`, a: "b / standing still / b. standing still" },
-                    { q: `<b>Read Passage 2 (Lekupe's Holiday):</b><br>5. Where did Lekupe spend his school holiday?`, a: "in the countryside / at his grandmother's home / countryside" },
-                    { q: `<b>Passage 2 Challenge:</b><br>6. What can we learn about Lekupe from the passage?<br>Type either: <b>A. He is brave</b>, <b>B. He is responsible</b>, or <b>C. He is generous</b>`, a: "b / he is responsible / b. he is responsible" },
-                    { q: `<b>Passage 2 Challenge:</b><br>7. What would most likely happen if Lekupe had not watered the vegetables?`, a: "the vegetables would have dried up and died / dry and die / dry up" },
-                    { q: `<b>Passage 2 Vocabulary:</b><br>8. The word <b>"immediately"</b> as used in the passage means:<br>Type either: <b>A. happily</b>, <b>B. strongly</b>, or <b>C. quickly</b>`, a: "c / quickly / c. quickly" },
-                    { q: `<b>Read Passage 3 (Naisula & The Puppy):</b><br>9. Why did Naisula call the number on the puppy's collar?<br>Type either: <b>A. She wanted to see the owner</b>, <b>B. She wanted to ensure the puppy was safe</b>`, a: "b / she wanted to ensure the puppy was safe / b. she wanted to ensure the puppy was safe" },
-                    { q: `<b>Passage 3 Challenge:</b><br>10. What would probably have happened if the puppy had no collar?`, a: "the owner would not be found / it would remain lost / won't find the owner" },
-                    { q: `<b>Passage 3 Challenge:</b><br>11. Which one of the following is true about Naisula?<br>Type either: <b>A. She found it in the morning</b>, <b>B. She took it to the owner's home</b>, or <b>C. She found it on her way from school</b>`, a: "c / she found the puppy on her way from school / c. she found the puppy on her way from school" },
-                    { q: `<b>Passage 3 Challenge:</b><br>12. What lesson do we learn from Naisula's actions?`, a: "kindness to animals / being helpful / caring for animals / kindness" },
-                    { q: `<b>Read Passage 4 (Tree Planting):</b><br>13. Why did Mukami suggest making a watering timetable?<br>Type either: <b>A. So that trees would be healthy</b>, or <b>B. So that pupils could grow more trees</b>`, a: "a / so that the trees would be healthy / a. so that the trees would be healthy" },
-                    { q: `<b>Passage 4 Challenge:</b><br>14. What is likely to happen if the learners continue caring for the trees?<br>Type either: <b>A. The school will have shade for rest</b>, or <b>B. The trees will become big at once</b>`, a: "a / the school will have shade for rest / a. the school will have shade for rest" },
-                    { q: `<b>Passage 4 Vocabulary:</b><br>15. The word <b>"seedlings"</b> as used in the passage refers to:<br>Type either: <b>A. young trees</b>, <b>B. short trees</b>, or <b>C. slim trees</b>`, a: "a / young trees / a. young trees" },
-                    { q: `<b>Passage 4 Challenge:</b><br>16. Why do you think the teacher reminded the learners not to step on the young plants?`, a: "to prevent them from breaking / not to crush them / protect them from damage / avoid killing them" },
-                    { q: `17. The children stayed indoors _________ it was raining heavily.<br>Type either: <b>A. but</b>, <b>B. for</b>, or <b>C. or</b>`, a: "b / for / b. for" },
-                    { q: `18. Mary wanted to play outside, _________ her mother asked her to finish her homework.<br>Type either: <b>A. so</b>, <b>B. but</b>, or <b>C. because</b>`, a: "b / but / b. but" },
-                    { q: `19. There were _________ pupils waiting outside the office.<br>Type either: <b>A. a little</b>, <b>B. a lot of</b>, or <b>C. much</b>`, a: "b / a lot of / b. a lot of" },
-                    { q: `20. Please add _________ salt to the soup.<br>Type either: <b>A. a few</b>, <b>B. a little</b>, or <b>C. many</b>`, a: "b / a little / b. a little" },
-                    { q: `21. This is the _________ exciting book I have ever read.<br>Type either: <b>A. most</b>, <b>B. more</b>, or <b>C. much</b>`, a: "a / most / a. most" },
-                    { q: `22. A car is usually _________ expensive than a bicycle.<br>Type either: <b>A. more</b>, <b>B. most</b>, or <b>C. much</b>`, a: "a / more / a. more" },
-                    { q: `23. We saw a _________ of birds flying over the trees.<br>Type either: <b>A. flock</b>, <b>B. herd</b>, or <b>C. swarm</b>`, a: "a / flock / a. flock" },
-                    { q: `24. The farmer saw a _________ of cattle near the river.<br>Type either: <b>A. flock</b>, <b>B. herd</b>, or <b>C. pack</b>`, a: "b / herd / b. herd" },
-                    { q: `25. Jane stood before the class and introduced _________.<br>Type either: <b>A. herself</b>, <b>B. himself</b>, or <b>C. itself</b>`, a: "a / herself / a. herself" },
-                    { q: `26. The pupils cleaned the classroom by _________.<br>Type either: <b>A. ourselves</b>, <b>B. themselves</b>, or <b>C. yourself</b>`, a: "b / themselves / b. themselves" },
-                    { q: `27. This pencil belongs to me. It is _________ pencil.<br>Type either: <b>A. my</b>, <b>B. your</b>, or <b>C. his</b>`, a: "a / my / a. my" },
-                    { q: `28. Peter hurt _________ hand while playing.<br>Type either: <b>A. her</b>, <b>B. his</b>, or <b>C. him</b>`, a: "b / his / b. his" },
-                    { q: `29. The children _________ reading when the teacher entered.<br>Type either: <b>A. was</b>, <b>B. were</b>, or <b>C. is</b>`, a: "b / were / b. were" },
-                    { q: `30. Every morning, our class _________ the day with a prayer.<br>Type either: <b>A. begin</b>, <b>B. begins</b>, or <b>C. beginning</b>`, a: "b / begins / b. begins" }
-                ];
-            },
+            English: () => [
+                { q: '1. During the cleaning activity, the pupils collected __________.', a: 'dry leaves, plastic bottles, and papers / dry leaves / plastic bottles / papers' },
+                { q: '2. Why did Moraa empty the old tin?', a: 'because stagnant water could attract mosquitoes / to prevent mosquitoes / stagnant water attracts mosquitoes' },
+                { q: '3. What is likely to happen if the pupils continue keeping the school clean every day?', a: 'the compound will always remain clean / it will remain clean / the school will stay clean' },
+                { q: '4. The word stagnant means:', a: 'standing still / not moving / still water' },
+                { q: '5. Where did Lekupe spend his school holiday?', a: 'in the countryside / at his grandmother\'s home / countryside' },
+                { q: '6. What can we learn about Lekupe from the passage?', a: 'he is responsible / responsible / he is hardworking' },
+                { q: '7. What would most likely happen if Lekupe had not watered the vegetables?', a: 'the vegetables would have dried up and died / they would dry and die / the plants would die' },
+                { q: '8. The word immediately means:', a: 'quickly / at once / fast' },
+                { q: '9. Why did Naisula call the number on the puppy\'s collar?', a: 'she wanted to find the owner / to contact the owner / to see the owner' },
+                { q: '10. What would probably have happened if the puppy had no collar?', a: 'the owner would not be found / it would remain lost / the owner would never know' },
+                { q: '11. Which sentence is true about Naisula?', a: 'she took the puppy to the owner\'s home / she found it and took it home / she returned it to the owner' },
+                { q: '12. What lesson do we learn from Naisula\'s actions?', a: 'kindness to animals / being helpful / caring for animals' },
+                { q: '13. Why did Mukami suggest making a watering timetable?', a: 'so that trees would stay healthy / so trees would remain healthy / to care for the trees' },
+                { q: '14. What is likely to happen if the learners continue caring for the trees?', a: 'the school will have shade for rest / the place will be shaded / the trees will grow well' },
+                { q: '15. The word seedlings refers to:', a: 'young trees / small plants / young plants' },
+                { q: '16. Why did the teacher warn learners not to step on the young plants?', a: 'to prevent them from breaking / so they would not be crushed / to protect them' },
+                { q: '17. The children stayed indoors _________ it was raining heavily.', a: 'because / for / as' },
+                { q: '18. Mary wanted to play outside, _________ her mother asked her to finish her homework.', a: 'but / however' },
+                { q: '19. There were _________ pupils waiting outside the office.', a: 'a lot of / many' },
+                { q: '20. Please add _________ salt to the soup.', a: 'a little / little' },
+                { q: '21. This is the _________ exciting book I have ever read.', a: 'most / the most' },
+                { q: '22. A car is usually _________ expensive than a bicycle.', a: 'more / much more' },
+                { q: '23. We saw a _________ of birds flying over the trees.', a: 'flock / group of birds' },
+                { q: '24. The farmer saw a _________ of cattle near the river.', a: 'herd / group of cattle' },
+                { q: '25. Jane stood before the class and introduced _________.', a: 'herself / herself to the class' },
+                { q: '26. The pupils cleaned the classroom by _________.', a: 'themselves / themselves' },
+                { q: '27. This pencil belongs to me. It is _________ pencil.', a: 'my / my pencil' },
+                { q: '28. Peter hurt _________ hand while playing.', a: 'his / his hand' },
+                { q: '29. The children _________ reading when the teacher entered.', a: 'were / were reading' },
+                { q: '30. Every morning, our class _________ the day with a prayer.', a: 'begins / begins the day' }
+            ],
 
-            CRE: () => {
-                return [
-                    { q: "Who built an ark by God's command to survive the great flood with his family?", a: "Noah" },
-                    { q: "List one fruit of the Holy Spirit according to Galatians 5:22-23.", a: "love / joy / peace / patience / kindness / goodness / faithfulness / gentleness / self-control" },
-                    { q: "Name the mountain where Moses received the Ten Commandments from God.", a: "Mount Sinai" },
-                    { q: "Which Christian value describes being truthful and sincere in all actions?", a: "Honesty" },
-                    { q: "What was the name of Abraham's wife?", a: "Sarah" },
-                    { q: "Where was Jesus Christ born?", a: "Bethlehem" },
-                    { q: "Who was the first king of Israel?", a: "Saul" },
-                    { q: "How many disciples did Jesus choose to follow Him?", a: "12" },
-                    { q: "What is the first book of the Old Testament in the Holy Bible?", a: "Genesis" },
-                    { q: "Which miracle did Jesus perform at the wedding in Cana of Galilee?", a: "turning water into wine" }
-                ];
-            },
+            CRE: () => [
+                { q: 'Who built an ark by God\'s command to survive the great flood with his family?', a: 'Noah' },
+                { q: 'List one fruit of the Holy Spirit according to Galatians 5:22-23.', a: 'love / joy / peace / patience / kindness / goodness / faithfulness / gentleness / self-control' },
+                { q: 'Name the mountain where Moses received the Ten Commandments from God.', a: 'Mount Sinai' },
+                { q: 'Which Christian value describes being truthful and sincere in all actions?', a: 'Honesty' },
+                { q: 'What was the name of Abraham\'s wife?', a: 'Sarah' },
+                { q: 'Where was Jesus Christ born?', a: 'Bethlehem' },
+                { q: 'Who was the first king of Israel?', a: 'Saul' },
+                { q: 'How many disciples did Jesus choose to follow Him?', a: '12' },
+                { q: 'What is the first book of the Old Testament in the Holy Bible?', a: 'Genesis' },
+                { q: 'Which miracle did Jesus perform at the wedding in Cana of Galilee?', a: 'turning water into wine / water into wine' }
+            ],
 
-                        SocialStudies: () => {
-                return [
-                    // Page 3: Questions 1 to 6 (Pala Area Map Assets)
-                    { q: `<img src="pala-map.png.jpeg" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Pala Area Map (Q1):</b> List two elements of a map that the learners observed in the map of Pala area.`, a: "key / compass rose / scale / title / frame" },
-                    { q: `<img src="pala-map.png.jpeg" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Pala Area Map (Q2):</b> As the learners interacted with the map, they noted some drainage features on the area. Name one of these features.`, a: "river / seasonal river / dam / swamp" },
-                    { q: `<img src="pala-map.png.jpeg" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Pala Area Map (Q3):</b> Grade 5 learners from Pala school visited a historic built environment in Pala area. Which historic built environment did they visit?`, a: "museum" },
-                    { q: "<b>Climate Systems (Q4):</b> Rain received is below 250 mm per year, skies are clear and cloudless, and it is hot during the day but low at night. This type of climate is called?", a: "arid climate / semi arid climate / desert climate" },
-                    { q: "<b>Civic Awareness (Q5):</b> Your group used digital devices to find out the effects of high population density in Kenya. State one major effect your group presented.", a: "land fragmentation / overcrowding / pressure on resources / crime / lack of housing" },
-                    { q: "<b>Traditional Systems (Q6):</b> Ken interviewed an elderly man on methods of instruction used in African traditional education. Give one of the methods he learnt.", a: "apprenticeship / storytelling / songs / riddles / proverbs / imitation" },
-                    
-                    // Page 5: Questions 8 to 10 (Kenya Border Outline Map Assets)
-                    { q: `<img src="kenya-map.png.PNG" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Kenya Map (Q8):</b> The learners were asked to discuss the countries that border Kenya. They identified the one marked <b>S</b> as:`, a: "somalia" },
-                    { q: `<img src="kenya-map.png.PNG" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Kenya Map (Q9):</b> The teacher asked Tina to name the fishing ground marked <b>T</b>. What response did she give?`, a: "lake victoria" },
-                    { q: `<img src="kenya-map.png.PNG" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Kenya Map (Q10):</b> The game reserve marked <b>R</b> is:`, a: "masai mara / amboseli / tsavo" },
-                    
-                    // Page 6: Question 12 (Motorcycle Photo Asset)
-                    { q: "<b>Transport Safety (Q12):</b> Apart from wearing helmets, what other safety precautions would motorcycle riders need to take while using this means of transport?", a: "observe speed limits / wear reflective jackets / avoid overloading / follow traffic lights" },
-                    
-                    // Page 7: Questions 14 to 16 (Final Resource Items)
-                    { q: "<b>Governance (Q14):</b> State one function of the council of elders among the Ameru (Njuri Ncheke).", a: "settling disputes / making laws / advising leaders / protecting community values / spiritual guidance" },
-                    { q: "<b>National Cohesion (Q15):</b> Apart from national day celebrations, identify one other factor that promotes national unity in Kenya.", a: "national language / education system / sports / trade / national symbols / constitution" },
-                    { q: "<b>Human Rights (Q16):</b> List one basic human right guaranteed to children in Kenya.", a: "right to education / right to healthcare / right to protection / right to food / right to shelter / right to a name" }
-                ];
-            }
+            SocialStudies: () => [
+                { q: 'Pala Area Map (Q1): List one natural resource found in the area.', a: 'rivers / forests / soil / minerals / water' },
+                { q: 'Pala Area Map (Q2): State one use of the river in the area.', a: 'watering crops / fishing / transport / drinking water' },
+                { q: 'Pala Area Map (Q3): Give one reason why people settle near a river.', a: 'easy water supply / farming / transport' },
+                { q: 'Climate Systems (Q4): Rain received is below 250 mm per year, skies are clear and hot during the day. What type of climate is this?', a: 'hot and dry / desert climate / arid climate' },
+                { q: 'Civic Awareness (Q5): State one major effect of high population density in Kenya.', a: 'pressure on resources / overcrowding / unemployment / poor housing' },
+                { q: 'Traditional Systems (Q6): Give one method of instruction used in African traditional education.', a: 'apprenticeship / storytelling / demonstration / oral teaching' },
+                { q: 'Kenya Map (Q8): Which neighbouring country is found to the north of Kenya?', a: 'Ethiopia / ethiopia' },
+                { q: 'Kenya Map (Q9): Which country is found to the south of Kenya?', a: 'Tanzania / tanzania' },
+                { q: 'Kenya Map (Q10): Which ocean borders the east of Kenya?', a: 'Indian Ocean / indian ocean' },
+                { q: 'Transport Safety (Q12): Apart from wearing helmets, what other safety precaution should motorcycle riders take?', a: 'observe traffic rules / follow road signs / drive carefully / use headlights' },
+                { q: 'Governance (Q14): State one function of the council of elders among the Ameru.', a: 'settling disputes / making laws / advising leaders / protecting community' },
+                { q: 'National Cohesion (Q15): Apart from national day celebrations, identify one factor that promotes national unity in Kenya.', a: 'national language / education system / sports / common citizenship' },
+                { q: 'Human Rights (Q16): List one basic human right guaranteed to children in Kenya.', a: 'right to education / right to healthcare / right to protection / right to food' }
+            ]
+        };
 
-                for (let item of items) { 
-                    questions.push({ q: item.q, a: item.a }); 
-                }
-                return questions;
-            }
-        }; // This accurately seals your global generatorBank master data map object
         function refreshDashboardUI() {
-            Object.keys(studyProgress).forEach(subject => {
-                // Fixed: Added template string backticks around the tracker element selector
+            Object.keys(defaultProgress).forEach(subject => {
                 const element = document.getElementById(`prog-${subject}`);
-                if (element) {
-                    // Fixed: Repaired bracket notation lookup rule and added execution tags
-                    const totalQuestions = generatorBank[subject] ? generatorBank[subject]().length : 0;
-                    element.innerText = `Last Score: ${studyProgress[subject]} / ${totalQuestions}`;
-                    
-                    if (studyProgress[subject] >= totalQuestions && totalQuestions > 0) {
-                        element.style.color = "var(--success)";
-                    } else {
-                        element.style.color = "var(--text-light)";
-                    }
-                }
+                if (!element) return;
+
+                const totalQuestions = generatorBank[subject] ? generatorBank[subject]().length : 0;
+                element.innerText = `Last Score: ${studyProgress[subject]} / ${totalQuestions}`;
+                element.style.color = (studyProgress[subject] >= totalQuestions && totalQuestions > 0) ? 'var(--success)' : 'var(--text-light)';
             });
-            if (localStorage.getItem("nadiaProgress") && document.getElementById("nadiaComposition")) {
-                document.getElementById("nadiaComposition").value = localStorage.getItem("nadiaEssay");
+
+            const essayBox = document.getElementById('nadiaComposition');
+            if (essayBox && localStorage.getItem(STORAGE_KEYS.essay)) {
+                essayBox.value = localStorage.getItem(STORAGE_KEYS.essay);
             }
         }
 
         function openQuiz(subjectName) {
             currentSubject = subjectName;
-            const quizTitleElement = document.getElementById("quizTitle");
+            const quizTitleElement = document.getElementById('quizTitle');
             if (quizTitleElement) {
                 quizTitleElement.innerText = subjectName;
             }
-            document.getElementById("dashboard").style.display = "none";
-            document.getElementById("quizContainer").style.display = "block";
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
             generateNewSet();
         }
 
         function closeQuiz() {
-            document.getElementById("dashboard").style.display = "block";
-            document.getElementById("quizContainer").style.display = "none";
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('quizContainer').style.display = 'none';
         }
 
         function generateNewSet() {
-            const wrapper = document.getElementById("questionsWrapper");
-            wrapper.innerHTML = "";
-            document.getElementById("masterSubmitBtn").style.display = "block";
-            
-            if (currentSubject && generatorBank[currentSubject]) {
-                // Fixed: Corrected template call method assignment
-                activeQuestionsCache = generatorBank[currentSubject]();
-                
-                activeQuestionsCache.forEach((item, index) => {
-                    let box = document.createElement("div");
-                    box.className = "question-box";
-                    
-                    // Fixed: Added backticks around template bindings for item tracking IDs
-                    box.id = `q-box-${index}`;
-                    
-                    // Fixed: Safe string isolation wrapping for dynamic HTML question templates
-                    box.innerHTML = `
-                        <div class="question-text">Q${index + 1}. ${item.q}</div>  
-                        <input type="text" class="answer-input" id="input-${index}" placeholder="Type your answer here..." autocomplete="off">  
-                        <div class="feedback-box" id="feedback-${index}"></div>
-                    `;
-                    wrapper.appendChild(box);
-                });
-            }
+            const wrapper = document.getElementById('questionsWrapper');
+            if (!wrapper) return;
+
+            wrapper.innerHTML = '';
+            document.getElementById('masterSubmitBtn').style.display = 'block';
+
+            if (!currentSubject || !generatorBank[currentSubject]) return;
+
+            activeQuestionsCache = generatorBank[currentSubject]();
+
+            activeQuestionsCache.forEach((item, index) => {
+                const box = document.createElement('div');
+                box.className = 'question-box';
+                box.id = `q-box-${index}`;
+                box.innerHTML = `
+                    <div class="question-text">Q${index + 1}. ${item.q}</div>
+                    <input type="text" class="answer-input" id="input-${index}" placeholder="Type your answer here..." autocomplete="off">
+                    <div class="feedback-box" id="feedback-${index}"></div>
+                `;
+                wrapper.appendChild(box);
+            });
         }
+
         function gradeCurrentQuiz() {
             let correctCount = 0;
             const totalQuestions = activeQuestionsCache.length;
-            
+
             activeQuestionsCache.forEach((item, index) => {
-                // FIXED: Wrapped the dynamic ID lookups safely in template backticks
                 const inputElement = document.getElementById(`input-${index}`);
                 const feedbackElement = document.getElementById(`feedback-${index}`);
-                
-                if (inputElement && feedbackElement) {
-                    const studentAns = inputElement.value.trim().toLowerCase();
-                    const correctAns = item.a.toString().trim().toLowerCase();
-                    
-                    feedbackElement.style.display = "block";
-                    inputElement.disabled = true;
-                    let isCorrect = false;
-                    
-                    if (studentAns === correctAns) {
-                        isCorrect = true;
-                    }
-                    else if (correctAns.includes("/")) {
-                        const validChoices = correctAns.split("/").map(choice => choice.trim());
-                        if (studentAns !== "" && validChoices.some(choice => choice === studentAns || choice.includes(studentAns) || studentAns.includes(choice))) {
-                            isCorrect = true;
-                        }
-                    }
-                    else if (studentAns !== "") {
-                        if (studentAns.includes(correctAns) || correctAns.includes(studentAns)) {
-                            isCorrect = true;
-                        }
-                    }
-                    
-                    if (isCorrect) {
-                        correctCount++;
-                        feedbackElement.className = "feedback-box feedback-correct";
-                        // FIXED: Added backticks around the innerHTML assignment
-                        feedbackElement.innerHTML = `✓ Correct!`;
-                    } else {
-                        feedbackElement.className = "feedback-box feedback-incorrect";
-                        // FIXED: Added backticks around the incorrect string layout template
-                        feedbackElement.innerHTML = `✗ Incorrect. Correct Answer: <b>${item.a}</b>`;
-                    }
+
+                if (!inputElement || !feedbackElement) return;
+
+                const studentAns = inputElement.value.trim();
+                const correctAns = String(item.a || '').trim();
+                const isCorrect = answerIsCorrect(studentAns, correctAns);
+
+                inputElement.disabled = true;
+                feedbackElement.style.display = 'block';
+
+                if (isCorrect) {
+                    correctCount += 1;
+                    feedbackElement.className = 'feedback-box feedback-correct';
+                    feedbackElement.innerHTML = '✓ Correct!';
+                } else {
+                    feedbackElement.className = 'feedback-box feedback-incorrect';
+                    feedbackElement.innerHTML = `✗ Incorrect. Correct answer: <b>${item.a}</b>`;
                 }
             });
-            
-            if (currentSubject && studyProgress.hasOwnProperty(currentSubject)) {
+
+            if (currentSubject && Object.prototype.hasOwnProperty.call(studyProgress, currentSubject)) {
                 studyProgress[currentSubject] = correctCount;
-                localStorage.setItem("nadiaProgress", JSON.stringify(studyProgress));
+                localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(studyProgress));
                 refreshDashboardUI();
             }
-            
-            document.getElementById("masterSubmitBtn").style.display = "none";
-            
-            // FIXED: Wrapped the multi-line evaluation message box cleanly in backticks
+
+            document.getElementById('masterSubmitBtn').style.display = 'none';
             alert(`Assessment Complete!\nNadia scored: ${correctCount} out of ${totalQuestions} in ${currentSubject}.`);
         }
 
-        window.onload = refreshDashboardUI;
-</script>
+        document.getElementById('saveEssayBtn')?.addEventListener('click', () => {
+            const essayText = document.getElementById('nadiaComposition')?.value || '';
+            localStorage.setItem(STORAGE_KEYS.essay, essayText);
+            alert('Story essay saved safely to Nadia\'s phone memory!');
+        });
+
+        window.addEventListener('load', () => {
+            reloadProgress();
+            refreshDashboardUI();
+            const essayBox = document.getElementById('nadiaComposition');
+            if (essayBox) {
+                essayBox.value = localStorage.getItem(STORAGE_KEYS.essay) || '';
+            }
+        });
+    </script>
 </body>
 </html>
