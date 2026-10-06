@@ -242,7 +242,6 @@
             box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
         }
 
-        /* QUIZ STYLES */
         .quiz-view {
             display: none;
             animation: slideIn 0.4s ease;
@@ -338,6 +337,12 @@
             margin: 10px 0;
             border-radius: 8px;
             border: 1px solid var(--border);
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            color: var(--text-light);
         }
 
         .answer-input {
@@ -408,7 +413,6 @@
             cursor: not-allowed;
         }
 
-        /* SCORE CARD STYLES */
         .score-card {
             display: none;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -465,6 +469,7 @@
             font-weight: 700;
             cursor: pointer;
             margin-top: 20px;
+            margin-right: 10px;
             transition: all 0.3s ease;
         }
 
@@ -473,48 +478,28 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        /* RESPONSIVE */
         @media (max-width: 480px) {
             header h1 {
                 font-size: 1.3rem;
             }
-
             .day-title {
                 font-size: 0.95rem;
             }
-
             .quiz-header {
                 flex-direction: column;
                 gap: 10px;
             }
-
             .back-btn, .gen-btn {
                 width: 100%;
             }
-
             #quizTitle {
                 width: 100%;
             }
-
             .score-circle {
                 width: 100px;
                 height: 100px;
                 font-size: 2rem;
             }
-        }
-
-        .loading-animation {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -525,7 +510,6 @@
     </header>
 
     <div class="container">
-        <!-- DASHBOARD -->
         <div id="dashboard">
             <div class="timetable-section">
                 <div class="day-title">📚 Grade 5 Active Revision Subjects</div>
@@ -536,7 +520,7 @@
                             <p>Reading Comprehension & Grammar</p>
                             <p class="progress-tracker" id="prog-English">0 / 0</p>
                         </div>
-                        <button class="start-btn" onclick="startQuizAnimation('English')">▶ Start Practice</button>
+                        <button class="start-btn" data-subject="English">▶ Start Practice</button>
                     </div>
 
                     <div class="subject-card">
@@ -545,7 +529,7 @@
                             <p>Christian Religious Education</p>
                             <p class="progress-tracker" id="prog-CRE">0 / 0</p>
                         </div>
-                        <button class="start-btn" onclick="startQuizAnimation('CRE')">▶ Start Practice</button>
+                        <button class="start-btn" data-subject="CRE">▶ Start Practice</button>
                     </div>
 
                     <div class="subject-card">
@@ -554,12 +538,11 @@
                             <p>Kenya & Pala Area Geography</p>
                             <p class="progress-tracker" id="prog-SocialStudies">0 / 0</p>
                         </div>
-                        <button class="start-btn" onclick="startQuizAnimation('SocialStudies')">▶ Start Practice</button>
+                        <button class="start-btn" data-subject="SocialStudies">▶ Start Practice</button>
                     </div>
                 </div>
             </div>
 
-            <!-- COMPOSITION SECTION -->
             <div class="composition-box">
                 <h4>✍️ Task 5: English Creative Composition</h4>
                 <p>Write about a time when you solved a problem. Describe the problem, what you did, and how you felt.</p>
@@ -568,9 +551,7 @@
             </div>
         </div>
 
-        <!-- QUIZ CONTAINER -->
         <div id="quizContainer" class="quiz-view">
-            <!-- SCORE CARD (shown after grading) -->
             <div id="scoreCard" class="score-card">
                 <h2>Assessment Complete! 🎉</h2>
                 <div class="score-circle" id="scoreValue">0/0</div>
@@ -578,19 +559,18 @@
                     <strong id="scoreText">You scored 0 out of 0</strong>
                 </div>
                 <div class="performance-message" id="performanceMsg"></div>
-                <button class="retry-btn" onclick="retryQuiz()">↻ Try Again</button>
-                <button class="retry-btn" style="background: rgba(255,255,255,0.2); color: white; margin-left: 10px;" onclick="closeQuiz()">⬅ Back to Menu</button>
+                <button class="retry-btn" id="retryBtn">↻ Try Again</button>
+                <button class="retry-btn" id="backMenuBtn" style="background: rgba(255,255,255,0.2); color: white;">⬅ Back to Menu</button>
             </div>
 
-            <!-- QUIZ CONTENT (shown while taking quiz) -->
             <div id="quizContent">
                 <div class="quiz-header">
-                    <button class="back-btn" onclick="closeQuiz()">⬅ Back</button>
+                    <button class="back-btn" id="closeQuizBtn">⬅ Back</button>
                     <h2 id="quizTitle">Subject</h2>
-                    <button class="gen-btn" onclick="generateNewSet()">🔄 Reload</button>
+                    <button class="gen-btn" id="reloadBtn">🔄 Reload</button>
                 </div>
                 <div id="questionsWrapper"></div>
-                <button id="masterSubmitBtn" class="submit-quiz-btn" onclick="gradeCurrentQuiz()">✓ Finish & Grade Exam</button>
+                <button id="masterSubmitBtn" class="submit-quiz-btn">✓ Finish & Grade Exam</button>
             </div>
         </div>
     </div>
@@ -598,6 +578,7 @@
     <script>
         const STORAGE_KEYS = { progress: 'nadiaProgress', essay: 'nadiaEssay' };
         const defaultProgress = { English: 0, CRE: 0, SocialStudies: 0 };
+        
         let currentSubject = '';
         let activeQuestionsCache = [];
         let studyProgress = { ...defaultProgress };
@@ -678,76 +659,21 @@
             ],
 
             SocialStudies: () => [
-                {
-                    q: '<img src="pala-map.png.jpeg" class="question-image" alt="Pala Area Map" /><b>Q1:</b> List one natural resource found in the Pala area.',
-                    a: 'rivers / forests / soil / water / minerals'
-                },
-                {
-                    q: '<img src="pala-map.png.jpeg" class="question-image" alt="Pala Area Map" /><b>Q2:</b> State one use of the river in the area.',
-                    a: 'watering crops / fishing / transport / drinking water'
-                },
-                {
-                    q: '<img src="pala-map.png.jpeg" class="question-image" alt="Pala Area Map" /><b>Q3:</b> Give one reason why people settle near a river.',
-                    a: 'easy water supply / farming / transport / fertile soil'
-                },
-                {
-                    q: '<b>Q4:</b> Rain received is below 250 mm yearly. What type of climate is this?',
-                    a: 'hot and dry / desert / arid / semi-arid'
-                },
-                {
-                    q: '<b>Q5:</b> State one major effect of high population density in Kenya.',
-                    a: 'pressure on resources / overcrowding / unemployment / poor housing'
-                },
-                {
-                    q: '<b>Q6:</b> Give one method of instruction in African traditional education.',
-                    a: 'apprenticeship / storytelling / demonstration / oral teaching / observation'
-                },
-                {
-                    q: '<img src="kenya-map.png.PNG" class="question-image" alt="Kenya Map" /><b>Q8:</b> Which country borders Kenya to the north?',
-                    a: 'Ethiopia / ethiopia'
-                },
-                {
-                    q: '<img src="kenya-map.png.PNG" class="question-image" alt="Kenya Map" /><b>Q9:</b> Which country is found to the south of Kenya?',
-                    a: 'Tanzania / tanzania'
-                },
-                {
-                    q: '<img src="kenya-map.png.PNG" class="question-image" alt="Kenya Map" /><b>Q10:</b> Which ocean borders the east of Kenya?',
-                    a: 'Indian Ocean / indian ocean'
-                },
-                {
-                    q: '<img src="motorcycle-rider.PNG" class="question-image" alt="Motorcycle Rider" /><b>Q12:</b> Apart from helmets, what other safety precaution should riders take?',
-                    a: 'observe traffic rules / follow road signs / drive carefully / use lights'
-                },
-                {
-                    q: '<b>Q14:</b> State one function of the council of elders (Njuri Ncheke).', 
-                    a: 'settling disputes / making laws / advising leaders / protecting community'
-                },
-                {
-                    q: '<b>Q15:</b> What other factor promotes national unity besides celebrations?',
-                    a: 'national language / education system / sports / common citizenship'
-                },
-                {
-                    q: '<b>Q16:</b> List one basic human right guaranteed to children in Kenya.',
-                    a: 'right to education / healthcare / protection / food / shelter'
-                }
+                { q: '<b>Q1 (Pala Area):</b> List one natural resource found in the area.', a: 'rivers / forests / soil / water / minerals' },
+                { q: '<b>Q2 (Pala Area):</b> State one use of the river in the area.', a: 'watering crops / fishing / transport / drinking water' },
+                { q: '<b>Q3 (Pala Area):</b> Give one reason why people settle near a river.', a: 'easy water supply / farming / transport / fertile soil' },
+                { q: '<b>Q4:</b> Rain received is below 250 mm yearly. What type of climate is this?', a: 'hot and dry / desert / arid / semi-arid' },
+                { q: '<b>Q5:</b> State one major effect of high population density in Kenya.', a: 'pressure on resources / overcrowding / unemployment / poor housing' },
+                { q: '<b>Q6:</b> Give one method of instruction in African traditional education.', a: 'apprenticeship / storytelling / demonstration / oral teaching / observation' },
+                { q: '<b>Q8 (Kenya Map):</b> Which country borders Kenya to the north?', a: 'Ethiopia / ethiopia' },
+                { q: '<b>Q9 (Kenya Map):</b> Which country is found to the south of Kenya?', a: 'Tanzania / tanzania' },
+                { q: '<b>Q10 (Kenya Map):</b> Which ocean borders the east of Kenya?', a: 'Indian Ocean / indian ocean' },
+                { q: '<b>Q12 (Transport):</b> Apart from helmets, what other safety precaution should riders take?', a: 'observe traffic rules / follow road signs / drive carefully / use lights' },
+                { q: '<b>Q14:</b> State one function of the council of elders (Njuri Ncheke).', a: 'settling disputes / making laws / advising leaders / protecting community' },
+                { q: '<b>Q15:</b> What other factor promotes national unity besides celebrations?', a: 'national language / education system / sports / common citizenship' },
+                { q: '<b>Q16:</b> List one basic human right guaranteed to children in Kenya.', a: 'right to education / healthcare / protection / food / shelter' }
             ]
         };
-
-        function startQuizAnimation(subject) {
-            currentSubject = subject;
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('quizContainer').style.display = 'block';
-            document.getElementById('scoreCard').classList.remove('show');
-            document.getElementById('quizContent').style.display = 'block';
-            
-            const quizTitle = document.getElementById('quizTitle');
-            quizTitle.innerHTML = `<span class="loading-animation"></span> Loading ${subject}...`;
-            
-            setTimeout(() => {
-                quizTitle.textContent = subject;
-                generateNewSet();
-            }, 800);
-        }
 
         function refreshDashboardUI() {
             Object.keys(defaultProgress).forEach(subject => {
@@ -759,6 +685,22 @@
                 element.textContent = `${score} / ${totalQuestions}`;
                 element.style.color = (score >= totalQuestions && totalQuestions > 0) ? 'var(--success)' : 'var(--primary)';
             });
+        }
+
+        function startQuizAnimation(subject) {
+            currentSubject = subject;
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('scoreCard').classList.remove('show');
+            document.getElementById('quizContent').style.display = 'block';
+            
+            const quizTitle = document.getElementById('quizTitle');
+            quizTitle.textContent = `Loading ${subject}...`;
+            
+            setTimeout(() => {
+                quizTitle.textContent = subject;
+                generateNewSet();
+            }, 500);
         }
 
         function closeQuiz() {
@@ -860,11 +802,24 @@
             generateNewSet();
         }
 
-        document.getElementById('saveEssayBtn')?.addEventListener('click', () => {
-            const essayText = document.getElementById('nadiaComposition')?.value || '';
-            localStorage.setItem(STORAGE_KEYS.essay, essayText);
-            alert('✓ Story essay saved safely to Nadia\'s phone memory!');
+        // Event Listeners
+        document.querySelectorAll('.start-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                startQuizAnimation(e.target.dataset.subject);
+            });
         });
+
+        document.getElementById('saveEssayBtn').addEventListener('click', () => {
+            const essayText = document.getElementById('nadiaComposition').value || '';
+            localStorage.setItem(STORAGE_KEYS.essay, essayText);
+            alert('✓ Story essay saved safely!');
+        });
+
+        document.getElementById('closeQuizBtn').addEventListener('click', closeQuiz);
+        document.getElementById('reloadBtn').addEventListener('click', generateNewSet);
+        document.getElementById('masterSubmitBtn').addEventListener('click', gradeCurrentQuiz);
+        document.getElementById('retryBtn').addEventListener('click', retryQuiz);
+        document.getElementById('backMenuBtn').addEventListener('click', closeQuiz);
 
         window.addEventListener('load', () => {
             reloadProgress();
@@ -875,9 +830,8 @@
             }
         });
 
-        // Prevent accidental navigation away
         window.addEventListener('beforeunload', (e) => {
-            const essayText = document.getElementById('nadiaComposition')?.value;
+            const essayText = document.getElementById('nadiaComposition').value;
             if (essayText && essayText.trim().length > 0) {
                 localStorage.setItem(STORAGE_KEYS.essay, essayText);
             }
