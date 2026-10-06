@@ -106,6 +106,12 @@
             color: var(--text-light);
         }
 
+        .progress-tracker {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
         .start-btn {
             background-color: #eff6ff;
             color: var(--primary);
@@ -115,7 +121,6 @@
             font-weight: 600;
         }
 
-        /* Quiz View Modal Styling */
         .quiz-view {
             display: none;
             background: var(--card-bg);
@@ -168,27 +173,58 @@
             font-size: 1rem;
         }
 
-        .answer-toggle {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: block;
-            margin-bottom: 8px;
-            text-decoration: underline;
+        .answer-input {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 10px 0;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
         }
 
-        .answer-text {
-            display: none;
-            color: var(--success);
+        .answer-input:focus {
+            border-color: var(--primary);
+        }
+
+        .feedback-box {
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
             font-weight: 600;
-            background: #f0fdf4;
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px dashed var(--success);
             font-size: 0.95rem;
+            display: none;
+        }
+
+        .feedback-correct {
+            background-color: #f0fdf4;
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .feedback-incorrect {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
+
+        .submit-quiz-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        .submit-quiz-btn:hover {
+            background-color: var(--secondary);
         }
     </style>
 </head>
@@ -203,53 +239,44 @@
         
         <!-- MAIN DASHBOARD COMPONENT -->
         <div id="dashboard">
-            <!-- DAY 1 -->
             <div class="timetable-section">
-                <div class="day-title">Day 1: Tuesday 6th October</div>
-                <div class="subject-grid">
-                    <div class="subject-card" onclick="openQuiz('Maths')">
-                        <div class="sub-info"><h3>Mathematics</h3><p>Session 1 • 8:30 – 10:00 AM</p></div>
-                        <div class="start-btn">Practice</div>
-                    </div>
-                    <div class="subject-card" onclick="openQuiz('Kiswahili')">
-                        <div class="sub-info"><h3>Kiswahili (Lugha)</h3><p>Session 2 • 11:00 AM – 12:30 PM</p></div>
-                        <div class="start-btn">Practice</div>
-                    </div>
-                    <div class="subject-card" onclick="openQuiz('Agriculture')">
-                        <div class="sub-info"><h3>Agriculture</h3><p>Session 3 • 1:30 – 3:00 PM</p></div>
-                        <div class="start-btn">Practice</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DAY 2 -->
-            <div class="timetable-section">
-                <div class="day-title">Day 2: Wednesday 7th October</div>
+                <div class="day-title">Grade 5 Active Revision Subjects</div>
                 <div class="subject-grid">
                     <div class="subject-card" onclick="openQuiz('English')">
-                        <div class="sub-info"><h3>English (Language)</h3><p>Session 1 • 8:30 – 10:00 AM</p></div>
+                        <div class="sub-info">
+                            <h3>English (Language)</h3>
+                            <p>Reading Comprehension & Grammar</p>
+                            <p class="progress-tracker" id="prog-English">Last Score: 0 / 30</p>
+                        </div>
                         <div class="start-btn">Practice</div>
                     </div>
                     <div class="subject-card" onclick="openQuiz('CRE')">
-                        <div class="sub-info"><h3>C.R.E.</h3><p>Session 2 • 11:00 AM – 12:30 PM</p></div>
+                        <div class="sub-info">
+                            <h3>C.R.E.</h3>
+                            <p>Christian Religious Education Tasks</p>
+                            <p class="progress-tracker" id="prog-CRE">Last Score: 0 / 10</p>
+                        </div>
                         <div class="start-btn">Practice</div>
                     </div>
                     <div class="subject-card" onclick="openQuiz('SocialStudies')">
-                        <div class="sub-info"><h3>Social Studies</h3><p>Session 3 • 1:30 – 3:00 PM</p></div>
+                        <div class="sub-info">
+                            <h3>Social Studies</h3>
+                            <p>Pala Area Map & Country Demographics</p>
+                            <p class="progress-tracker" id="prog-SocialStudies">Last Score: 0 / 13</p>
+                        </div>
                         <div class="start-btn">Practice</div>
                     </div>
                 </div>
             </div>
 
-            <!-- DAY 3 -->
-            <div class="timetable-section">
-                <div class="day-title">Day 3: Thursday 8th October</div>
-                <div class="subject-grid">
-                    <div class="subject-card" onclick="openQuiz('Science')">
-                        <div class="sub-info"><h3>Science & Technology</h3><p>Session 1 • 8:30 – 10:00 AM</p></div>
-                        <div class="start-btn">Practice</div>
-                    </div>
-                </div>
+            <!-- TASK 5: COMPOSITION SECTION WRITING BOARD -->
+            <div style="margin-top: 20px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px dashed var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 6px;">✍️ Task 5: English Creative Composition Board</h4>
+                <p style="font-size: 0.85rem; color: var(--text-dark); margin-bottom: 10px; font-weight: 600;">
+                    Write a composition about a time when you solved a problem. Describe the problem, what you did, and how you felt after solving it.
+                </p>
+                <textarea id="nadiaComposition" style="width: 100%; height: 140px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; resize: none; outline: none; font-family: inherit;" placeholder="Nadia can type her beautiful story essay right here..."></textarea>
+                <button onclick="localStorage.setItem('nadiaEssay', document.getElementById('nadiaComposition').value); alert('Story essay saved safely to Nadia\'s phone memory!')" style="margin-top: 8px; background: var(--success); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: block; margin-left: auto;">💾 Save Essay Progress</button>
             </div>
         </div>
 
@@ -258,95 +285,134 @@
             <div class="quiz-header">
                 <button class="back-btn" onclick="closeQuiz()">⬅ Back</button>
                 <h2 id="quizTitle">Subject</h2>
-                <button class="gen-btn" onclick="generateNewSet()">🔄 New Questions</button>
+                <button class="gen-btn" onclick="generateNewSet()">🔄 Reset Layout</button>
             </div>
             <div id="questionsWrapper"></div>
+            <button id="masterSubmitBtn" class="submit-quiz-btn" onclick="gradeCurrentQuiz()">Finish & Grade Exam</button>
         </div>
 
     </div>
-
     <script>
         let currentSubject = "";
+        let activeQuestionsCache = [];
 
-        // Core dynamic question bank configuration schemas
+        let studyProgress = { English: 0, CRE: 0, SocialStudies: 0 };
+        
+        if (localStorage.getItem("nadiaProgress")) {
+            studyProgress = JSON.parse(localStorage.getItem("nadiaProgress"));
+        }
+
         const generatorBank = {
-            Maths: () => {
-                let questions = [];
-                for(let i = 1; i <= 10; i++) {
-                    let randVal = Math.floor(100000 + Math.random() * 899999);
-                    let places = ["hundreds", "thousands", "ten thousands", "hundred thousands"];
-                    let selectedPlace = places[Math.floor(Math.random() * places.length)];
-                    
-                    let numA = Math.floor(10 + Math.random() * 90);
-                    let numB = Math.floor(10 + Math.random() * 90);
-                    
-                    if (i % 2 === 0) {
-                        // Generates place value recognition tasks
-                        questions.push({
-                            q: `What is the place value of the underlined digit in <u>${randVal.toString()[1]}</u>${randVal.toString().substring(2)}?`,
-                            a: selectedPlace
-                        });
-                    } else {
-                        // Generates mental multiplication or product tasks
-                        questions.push({
-                            q: `Work out the product of ${numA} and ${numB}:`,
-                            a: `${numA * numB}`
-                        });
-                    }
-                }
-                return questions;
+            English: () => {
+                return [
+                    { q: `<b>Read Passage 1 (Green Valley School):</b><br>1. During the cleaning activity, the pupils collected __________.`, a: "dry leaves, plastic bottles, and papers / dry leaves / plastic bottles / papers" },
+                    { q: `<b>Passage 1 Challenge:</b><br>2. Why did Moraa empty the old tin?`, a: "because stagnant water could attract mosquitoes / stagnant water could attract mosquitoes / prevent mosquitoes" },
+                    { q: `<b>Passage 1 Challenge:</b><br>3. What is likely to happen if the pupils continue keeping the school clean every day?`, a: "the compound will always remain clean / keep clean / clean and safe" },
+                    { q: `<b>Passage 1 Vocabulary:</b><br>4. The word <b>"stagnant"</b> as used in the passage means:<br>Type either: <b>A. flowing quickly</b>, <b>B. standing still</b>, or <b>C. full of water</b>`, a: "b / standing still / b. standing still" },
+                    { q: `<b>Read Passage 2 (Lekupe's Holiday):</b><br>5. Where did Lekupe spend his school holiday?`, a: "in the countryside / at his grandmother's home / countryside" },
+                    { q: `<b>Passage 2 Challenge:</b><br>6. What can we learn about Lekupe from the passage?<br>Type either: <b>A. He is brave</b>, <b>B. He is responsible</b>, or <b>C. He is generous</b>`, a: "b / he is responsible / b. he is responsible" },
+                    { q: `<b>Passage 2 Challenge:</b><br>7. What would most likely happen if Lekupe had not watered the vegetables?`, a: "the vegetables would have dried up and died / dry and die / dry up" },
+                    { q: `<b>Passage 2 Vocabulary:</b><br>8. The word <b>"immediately"</b> as used in the passage means:<br>Type either: <b>A. happily</b>, <b>B. strongly</b>, or <b>C. quickly</b>`, a: "c / quickly / c. quickly" },
+                    { q: `<b>Read Passage 3 (Naisula & The Puppy):</b><br>9. Why did Naisula call the number on the puppy's collar?<br>Type either: <b>A. She wanted to see the owner</b>, <b>B. She wanted to ensure the puppy was safe</b>`, a: "b / she wanted to ensure the puppy was safe / b. she wanted to ensure the puppy was safe" },
+                    { q: `<b>Passage 3 Challenge:</b><br>10. What would probably have happened if the puppy had no collar?`, a: "the owner would not be found / it would remain lost / won't find the owner" },
+                    { q: `<b>Passage 3 Challenge:</b><br>11. Which one of the following is true about Naisula?<br>Type either: <b>A. She found it in the morning</b>, <b>B. She took it to the owner's home</b>, or <b>C. She found it on her way from school</b>`, a: "c / she found the puppy on her way from school / c. she found the puppy on her way from school" },
+                    { q: `<b>Passage 3 Challenge:</b><br>12. What lesson do we learn from Naisula's actions?`, a: "kindness to animals / being helpful / caring for animals / kindness" },
+                    { q: `<b>Read Passage 4 (Tree Planting):</b><br>13. Why did Mukami suggest making a watering timetable?<br>Type either: <b>A. So that trees would be healthy</b>, or <b>B. So that pupils could grow more trees</b>`, a: "a / so that the trees would be healthy / a. so that the trees would be healthy" },
+                    { q: `<b>Passage 4 Challenge:</b><br>14. What is likely to happen if the learners continue caring for the trees?<br>Type either: <b>A. The school will have shade for rest</b>, or <b>B. The trees will become big at once</b>`, a: "a / the school will have shade for rest / a. the school will have shade for rest" },
+                    { q: `<b>Passage 4 Vocabulary:</b><br>15. The word <b>"seedlings"</b> as used in the passage refers to:<br>Type either: <b>A. young trees</b>, <b>B. short trees</b>, or <b>C. slim trees</b>`, a: "a / young trees / a. young trees" },
+                    { q: `<b>Passage 4 Challenge:</b><br>16. Why do you think the teacher reminded the learners not to step on the young plants?`, a: "to prevent them from breaking / not to crush them / protect them from damage / avoid killing them" },
+                    { q: `17. The children stayed indoors _________ it was raining heavily.<br>Type either: <b>A. but</b>, <b>B. for</b>, or <b>C. or</b>`, a: "b / for / b. for" },
+                    { q: `18. Mary wanted to play outside, _________ her mother asked her to finish her homework.<br>Type either: <b>A. so</b>, <b>B. but</b>, or <b>C. because</b>`, a: "b / but / b. but" },
+                    { q: `19. There were _________ pupils waiting outside the office.<br>Type either: <b>A. a little</b>, <b>B. a lot of</b>, or <b>C. much</b>`, a: "b / a lot of / b. a lot of" },
+                    { q: `20. Please add _________ salt to the soup.<br>Type either: <b>A. a few</b>, <b>B. a little</b>, or <b>C. many</b>`, a: "b / a little / b. a little" },
+                    { q: `21. This is the _________ exciting book I have ever read.<br>Type either: <b>A. most</b>, <b>B. more</b>, or <b>C. much</b>`, a: "a / most / a. most" },
+                    { q: `22. A car is usually _________ expensive than a bicycle.<br>Type either: <b>A. more</b>, <b>B. most</b>, or <b>C. much</b>`, a: "a / more / a. more" },
+                    { q: `23. We saw a _________ of birds flying over the trees.<br>Type either: <b>A. flock</b>, <b>B. herd</b>, or <b>C. swarm</b>`, a: "a / flock / a. flock" },
+                    { q: `24. The farmer saw a _________ of cattle near the river.<br>Type either: <b>A. flock</b>, <b>B. herd</b>, or <b>C. pack</b>`, a: "b / herd / b. herd" },
+                    { q: `25. Jane stood before the class and introduced _________.<br>Type either: <b>A. herself</b>, <b>B. himself</b>, or <b>C. itself</b>`, a: "a / herself / a. herself" },
+                    { q: `26. The pupils cleaned the classroom by _________.<br>Type either: <b>A. ourselves</b>, <b>B. themselves</b>, or <b>C. yourself</b>`, a: "b / themselves / b. themselves" },
+                    { q: `27. This pencil belongs to me. It is _________ pencil.<br>Type either: <b>A. my</b>, <b>B. your</b>, or <b>C. his</b>`, a: "a / my / a. my" },
+                    { q: `28. Peter hurt _________ hand while playing.<br>Type either: <b>A. her</b>, <b>B. his</b>, or <b>C. him</b>`, a: "b / his / b. his" },
+                    { q: `29. The children _________ reading when the teacher entered.<br>Type either: <b>A. was</b>, <b>B. were</b>, or <b>C. is</b>`, a: "b / were / b. were" },
+                    { q: `30. Every morning, our class _________ the day with a prayer.<br>Type either: <b>A. begin</b>, <b>B. begins</b>, or <b>C. beginning</b>`, a: "b / begins / b. begins" }
+                ];
             },
 
-            Kiswahili: () => {
-                let questions = [];
-                const msamiati = [
-                    { n: "Mwalimu", k: "Mwanafunzi/Kiranja" },
-                    { n: "Kijana", k: "Mzee" },
-                    { n: "Asubuhi", k: "Jioni" }
+            CRE: () => {
+                return [
+                    { q: "Who built an ark by God's command to survive the great flood with his family?", a: "Noah" },
+                    { q: "List one fruit of the Holy Spirit according to Galatians 5:22-23.", a: "love / joy / peace / patience / kindness / goodness / faithfulness / gentleness / self-control" },
+                    { q: "Name the mountain where Moses received the Ten Commandments from God.", a: "Mount Sinai" },
+                    { q: "Which Christian value describes being truthful and sincere in all actions?", a: "Honesty" },
+                    { q: "What was the name of Abraham's wife?", a: "Sarah" },
+                    { q: "Where was Jesus Christ born?", a: "Bethlehem" },
+                    { q: "Who was the first king of Israel?", a: "Saul" },
+                    { q: "How many disciples did Jesus choose to follow Him?", a: "12" },
+                    { q: "What is the first book of the Old Testament in the Holy Bible?", a: "Genesis" },
+                    { q: "Which miracle did Jesus perform at the wedding in Cana of Galilee?", a: "turning water into wine" }
                 ];
-
-                for (let item of msamiati) {
-                    questions.push({
-                        q: `Andika kinyume cha neno hili: <b>${item.n}</b>`,
-                        a: item.k
-                    });
-                }
-                return questions;
             },
 
-            Agriculture: () => {
-                let questions = [];
-                const facts = [
-                    { q: "Which type of soil feels sticky when wet and forms long ribbons?", a: "Clay soil" },
-                    { q: "Name the organic material formed from decayed plant and animal matter that enriches soil.", a: "Humus" },
-                    { q: "Which soil conservation method involves placing dry grass or leaves on the soil surface?", a: "Mulching" }
+                        SocialStudies: () => {
+                return [
+                    // Page 3: Questions 1 to 6 (Pala Area Map Assets)
+                    { q: `<img src="pala-map.png.jpeg" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Pala Area Map (Q1):</b> List two elements of a map that the learners observed in the map of Pala area.`, a: "key / compass rose / scale / title / frame" },
+                    { q: `<img src="pala-map.png.jpeg" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Pala Area Map (Q2):</b> As the learners interacted with the map, they noted some drainage features on the area. Name one of these features.`, a: "river / seasonal river / dam / swamp" },
+                    { q: `<img src="pala-map.png.jpeg" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Pala Area Map (Q3):</b> Grade 5 learners from Pala school visited a historic built environment in Pala area. Which historic built environment did they visit?`, a: "museum" },
+                    { q: "<b>Climate Systems (Q4):</b> Rain received is below 250 mm per year, skies are clear and cloudless, and it is hot during the day but low at night. This type of climate is called?", a: "arid climate / semi arid climate / desert climate" },
+                    { q: "<b>Civic Awareness (Q5):</b> Your group used digital devices to find out the effects of high population density in Kenya. State one major effect your group presented.", a: "land fragmentation / overcrowding / pressure on resources / crime / lack of housing" },
+                    { q: "<b>Traditional Systems (Q6):</b> Ken interviewed an elderly man on methods of instruction used in African traditional education. Give one of the methods he learnt.", a: "apprenticeship / storytelling / songs / riddles / proverbs / imitation" },
+                    
+                    // Page 5: Questions 8 to 10 (Kenya Border Outline Map Assets)
+                    { q: `<img src="kenya-map.png.PNG" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Kenya Map (Q8):</b> The learners were asked to discuss the countries that border Kenya. They identified the one marked <b>S</b> as:`, a: "somalia" },
+                    { q: `<img src="kenya-map.png.PNG" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Kenya Map (Q9):</b> The teacher asked Tina to name the fishing ground marked <b>T</b>. What response did she give?`, a: "lake victoria" },
+                    { q: `<img src="kenya-map.png.PNG" style="width:100%; max-width:400px; display:block; margin:10px 0; border-radius:8px; border:1px solid #cbd5e1;"><b>Kenya Map (Q10):</b> The game reserve marked <b>R</b> is:`, a: "masai mara / amboseli / tsavo" },
+                    
+                    // Page 6: Question 12 (Motorcycle Photo Asset)
+                    { q: "<b>Transport Safety (Q12):</b> Apart from wearing helmets, what other safety precautions would motorcycle riders need to take while using this means of transport?", a: "observe speed limits / wear reflective jackets / avoid overloading / follow traffic lights" },
+                    
+                    // Page 7: Questions 14 to 16 (Final Resource Items)
+                    { q: "<b>Governance (Q14):</b> State one function of the council of elders among the Ameru (Njuri Ncheke).", a: "settling disputes / making laws / advising leaders / protecting community values / spiritual guidance" },
+                    { q: "<b>National Cohesion (Q15):</b> Apart from national day celebrations, identify one other factor that promotes national unity in Kenya.", a: "national language / education system / sports / trade / national symbols / constitution" },
+                    { q: "<b>Human Rights (Q16):</b> List one basic human right guaranteed to children in Kenya.", a: "right to education / right to healthcare / right to protection / right to food / right to shelter / right to a name" }
                 ];
+            }
 
-                for (let fact of facts) {
-                    questions.push({
-                        q: fact.q,
-                        a: fact.a
-                    });
+                for (let item of items) { 
+                    questions.push({ q: item.q, a: item.a }); 
                 }
                 return questions;
             }
-        };
+        }; // This accurately seals your global generatorBank master data map object
+        function refreshDashboardUI() {
+            Object.keys(studyProgress).forEach(subject => {
+                // Fixed: Added template string backticks around the tracker element selector
+                const element = document.getElementById(`prog-${subject}`);
+                if (element) {
+                    // Fixed: Repaired bracket notation lookup rule and added execution tags
+                    const totalQuestions = generatorBank[subject] ? generatorBank[subject]().length : 0;
+                    element.innerText = `Last Score: ${studyProgress[subject]} / ${totalQuestions}`;
+                    
+                    if (studyProgress[subject] >= totalQuestions && totalQuestions > 0) {
+                        element.style.color = "var(--success)";
+                    } else {
+                        element.style.color = "var(--text-light)";
+                    }
+                }
+            });
+            if (localStorage.getItem("nadiaProgress") && document.getElementById("nadiaComposition")) {
+                document.getElementById("nadiaComposition").value = localStorage.getItem("nadiaEssay");
+            }
+        }
 
-        // NEW: Handles transitions from the dashboard cards to the interactive quiz screen
         function openQuiz(subjectName) {
             currentSubject = subjectName;
-            
-            // Updates the visible title banner on the quiz screen
             const quizTitleElement = document.getElementById("quizTitle");
             if (quizTitleElement) {
                 quizTitleElement.innerText = subjectName;
             }
-            
-            // Toggles view displays
             document.getElementById("dashboard").style.display = "none";
             document.getElementById("quizContainer").style.display = "block";
-            
-            // Automatically draws the first set of practice questions
             generateNewSet();
         }
 
@@ -358,34 +424,87 @@
         function generateNewSet() {
             const wrapper = document.getElementById("questionsWrapper");
             wrapper.innerHTML = "";
+            document.getElementById("masterSubmitBtn").style.display = "block";
             
-            // Fixed validation logic structure
-            if (currentSubject && generatorBank[currentSubject]) {  
-                const dataset = generatorBank[currentSubject]();
+            if (currentSubject && generatorBank[currentSubject]) {
+                // Fixed: Corrected template call method assignment
+                activeQuestionsCache = generatorBank[currentSubject]();
                 
-                dataset.forEach((item, index) => {
+                activeQuestionsCache.forEach((item, index) => {
                     let box = document.createElement("div");
                     box.className = "question-box";
-                    box.innerHTML = `<div class="question-text">Q${index + 1}. ${item.q}</div> 
-                                     <button class="answer-toggle" onclick="toggleAns(this)">Show Answer</button> 
-                                     <div class="answer-text">${item.a}</div>`;
                     
+                    // Fixed: Added backticks around template bindings for item tracking IDs
+                    box.id = `q-box-${index}`;
+                    
+                    // Fixed: Safe string isolation wrapping for dynamic HTML question templates
+                    box.innerHTML = `
+                        <div class="question-text">Q${index + 1}. ${item.q}</div>  
+                        <input type="text" class="answer-input" id="input-${index}" placeholder="Type your answer here..." autocomplete="off">  
+                        <div class="feedback-box" id="feedback-${index}"></div>
+                    `;
                     wrapper.appendChild(box);
                 });
             }
         }
-
-        function toggleAns(btnElement) {
-            let ansDiv = btnElement.nextElementSibling;
-            if (ansDiv.style.display === "block") {
-                ansDiv.style.display = "none";
-                btnElement.innerText = "Show Answer";
-            } else {
-                ansDiv.style.display = "block";
-                btnElement.innerText = "Hide Answer";
+        function gradeCurrentQuiz() {
+            let correctCount = 0;
+            const totalQuestions = activeQuestionsCache.length;
+            
+            activeQuestionsCache.forEach((item, index) => {
+                // FIXED: Wrapped the dynamic ID lookups safely in template backticks
+                const inputElement = document.getElementById(`input-${index}`);
+                const feedbackElement = document.getElementById(`feedback-${index}`);
+                
+                if (inputElement && feedbackElement) {
+                    const studentAns = inputElement.value.trim().toLowerCase();
+                    const correctAns = item.a.toString().trim().toLowerCase();
+                    
+                    feedbackElement.style.display = "block";
+                    inputElement.disabled = true;
+                    let isCorrect = false;
+                    
+                    if (studentAns === correctAns) {
+                        isCorrect = true;
+                    }
+                    else if (correctAns.includes("/")) {
+                        const validChoices = correctAns.split("/").map(choice => choice.trim());
+                        if (studentAns !== "" && validChoices.some(choice => choice === studentAns || choice.includes(studentAns) || studentAns.includes(choice))) {
+                            isCorrect = true;
+                        }
+                    }
+                    else if (studentAns !== "") {
+                        if (studentAns.includes(correctAns) || correctAns.includes(studentAns)) {
+                            isCorrect = true;
+                        }
+                    }
+                    
+                    if (isCorrect) {
+                        correctCount++;
+                        feedbackElement.className = "feedback-box feedback-correct";
+                        // FIXED: Added backticks around the innerHTML assignment
+                        feedbackElement.innerHTML = `✓ Correct!`;
+                    } else {
+                        feedbackElement.className = "feedback-box feedback-incorrect";
+                        // FIXED: Added backticks around the incorrect string layout template
+                        feedbackElement.innerHTML = `✗ Incorrect. Correct Answer: <b>${item.a}</b>`;
+                    }
+                }
+            });
+            
+            if (currentSubject && studyProgress.hasOwnProperty(currentSubject)) {
+                studyProgress[currentSubject] = correctCount;
+                localStorage.setItem("nadiaProgress", JSON.stringify(studyProgress));
+                refreshDashboardUI();
             }
+            
+            document.getElementById("masterSubmitBtn").style.display = "none";
+            
+            // FIXED: Wrapped the multi-line evaluation message box cleanly in backticks
+            alert(`Assessment Complete!\nNadia scored: ${correctCount} out of ${totalQuestions} in ${currentSubject}.`);
         }
-        </script>
+
+        window.onload = refreshDashboardUI;
+</script>
 </body>
 </html>
-
