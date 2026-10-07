@@ -1,9 +1,15 @@
+// Storage configuration keys and tracking state initialization
 const STORAGE_KEYS = { progress: 'nadiaProgress', essay: 'nadiaEssay' };
-const defaultProgress = { English: 0, CRE: 0, SocialStudies: 0 };
+const defaultProgress = { English: 0, CRE: 0, SocialStudies: 0, CreativeArts: 0 };
 let currentSubject = '';
 let activeQuestionsCache = [];
 let studyProgress = { ...defaultProgress };
 
+/**
+ * Safely parse incoming localStorage strings into operational JSON structures
+ * @param {string} key - Local storage identity reference 
+ * @param {object} fallback - Default object context structure
+ */
 function safeLoadJson(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
@@ -13,15 +19,27 @@ function safeLoadJson(key, fallback) {
   }
 }
 
+/**
+ * Sync active student scores tracking with cached local engine states
+ */
 function reloadProgress() {
   const saved = safeLoadJson(STORAGE_KEYS.progress, defaultProgress);
   studyProgress = { ...defaultProgress, ...saved };
 }
 
+/**
+ * Regularizes raw textual answers to discard external spaces or capitalization offsets
+ * @param {string} value - Text input string value
+ */
 function normalizeAnswer(value) {
   return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
+/**
+ * Deep grades responses relative to comprehensive list configurations
+ * @param {string} studentAnswer - Evaluated student text string inputs
+ * @param {string} correctAnswer - System master key data reference strings
+ */
 function answerIsCorrect(studentAnswer, correctAnswer) {
   const student = normalizeAnswer(studentAnswer);
   const expected = normalizeAnswer(correctAnswer);
@@ -32,13 +50,14 @@ function answerIsCorrect(studentAnswer, correctAnswer) {
   return choices.some(choice => choice === student || student.includes(choice) || choice.includes(student));
 }
 
+// Remote server file path designations for dynamic visual assets
 const imageBase = {
   kenya: 'https://githubusercontent.com',
   pala: 'https://githubusercontent.com',
   rider: 'https://githubusercontent.com',
   kivoi: 'https://githubusercontent.com'
 };
-
+// Comprehensive subject evaluation repositories
 const generatorBank = {
   English: () => [
     { q: 'During the cleaning activity, the pupils collected __________', a: 'dry leaves, plastic bottles, and papers / dry leaves / plastic bottles' },
@@ -53,7 +72,7 @@ const generatorBank = {
     { q: 'What would happen if the puppy had no collar?', a: 'the owner would not be found / it would remain lost' },
     { q: 'Which sentence is true about Naisula?', a: 'she took the puppy to the owner / she was kind' },
     { q: 'What lesson do we learn from Naisula?', a: 'kindness to animals / being helpful / caring' },
-    { q: `<img class="question-image" src="${imageBase.kivoi}" alt="Kivoi wa Mwendwa portrait"><br><b>Q13.</b> During a visit in a museum, a Grade 5 learner took the photograph below of Kivoi Wa Mwendwa from a portrait hung on the museum wall and later displayed it in class during a discussion on qualities of traditional leaders in Kenya. Which quality is being shown?`, a: 'wisdom / respect / leadership / knowledge / courage / honesty' },
+    { q: `<img class="question-image" src="${imageBase.kivoi}" alt="Kivoi wa Mwendwa portrait"><br><b>Q13.</b> Which quality is being shown?`, a: 'wisdom / respect / leadership / knowledge / courage / honesty' },
     { q: 'Why did Mukami suggest a watering timetable?', a: 'so trees would stay healthy / to care for the trees' },
     { q: 'What happens if learners continue caring for trees?', a: 'the school will have shade / the place will be shaded' },
     { q: '"Seedlings" refers to:', a: 'young trees / small plants / young plants' },
@@ -102,14 +121,21 @@ const generatorBank = {
     { q: '<b>Q14</b> State one function of the council of elders (Njuri Ncheke).', a: 'settling disputes / making laws / advising leaders / protecting community' },
     { q: '<b>Q15</b> What other factor promotes national unity besides celebrations?', a: 'national language / education system / sports / common citizenship' },
     { q: '<b>Q16</b> List one basic human right guaranteed to children in Kenya.', a: 'right to education / healthcare / protection / food / shelter' }
+  ],
+
+  CreativeArts: () => [
+    { q: 'How do performance costumes improve community folk dances?', a: 'show cultural identity / identify performers role' },
+    { q: 'Name one type of kick suitable for taking a penalty kick during a football match.', a: 'instep kick / inside of foot kick' },
+    { q: 'Which ball-stopping technique is most suitable for handling fast ground balls rolling on field turf?', a: 'sole trap / inside of foot trap' },
+    { q: 'Name the function of the handle part (labelled A) on a standard Rounders hitting bat.', a: 'gripping / holding the bat safely' },
+    { q: 'Name the specific type of baton exchange sequence utilized by team relay sprinters shown running.', a: 'non-visual baton exchange / non visual' },
+    { q: 'What specific fluid color brush technique is used to paint transparent artwork layers over paper surfaces?', a: 'wash technique / transparent wash' }
   ]
 };
-
 function refreshDashboardUI() {
   Object.keys(defaultProgress).forEach(subject => {
     const element = document.getElementById(`prog-${subject}`);
     if (!element) return;
-
     const totalQuestions = generatorBank[subject] ? generatorBank[subject]().length : 0;
     const score = studyProgress[subject];
     element.textContent = `${score} / ${totalQuestions}`;
@@ -123,10 +149,10 @@ function startQuizAnimation(subject) {
   document.getElementById('quizContainer').style.display = 'block';
   document.getElementById('scoreCard').classList.remove('show');
   document.getElementById('quizContent').style.display = 'block';
-
+  
   const quizTitle = document.getElementById('quizTitle');
   quizTitle.textContent = `Loading ${subject}...`;
-
+  
   setTimeout(() => {
     quizTitle.textContent = subject;
     generateNewSet();
@@ -142,11 +168,9 @@ function generateNewSet() {
   const wrapper = document.getElementById('questionsWrapper');
   wrapper.innerHTML = '';
   document.getElementById('masterSubmitBtn').style.display = 'block';
-
   if (!currentSubject || !generatorBank[currentSubject]) return;
-
+  
   activeQuestionsCache = generatorBank[currentSubject]();
-
   activeQuestionsCache.forEach((item, index) => {
     const box = document.createElement('div');
     box.className = 'question-box';
@@ -163,20 +187,19 @@ function generateNewSet() {
 function gradeCurrentQuiz() {
   let correctCount = 0;
   const totalQuestions = activeQuestionsCache.length;
-
+  
   activeQuestionsCache.forEach((item, index) => {
     const inputEl = document.getElementById(`input-${index}`);
     const feedbackEl = document.getElementById(`feedback-${index}`);
-
     if (!inputEl || !feedbackEl) return;
-
+    
     const studentAnswer = inputEl.value.trim();
     const correctAnswer = String(item.a || '').trim();
     const isCorrect = answerIsCorrect(studentAnswer, correctAnswer);
-
+    
     inputEl.disabled = true;
     feedbackEl.style.display = 'block';
-
+    
     if (isCorrect) {
       correctCount++;
       feedbackEl.className = 'feedback-box feedback-correct';
@@ -186,26 +209,24 @@ function gradeCurrentQuiz() {
       feedbackEl.innerHTML = `✗ Incorrect. Correct: <b>${item.a}</b>`;
     }
   });
-
+  
   if (currentSubject && Object.prototype.hasOwnProperty.call(studyProgress, currentSubject)) {
     studyProgress[currentSubject] = correctCount;
     localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(studyProgress));
     refreshDashboardUI();
   }
-
   showScoreCard(correctCount, totalQuestions);
 }
 
 function showScoreCard(score, total) {
   document.getElementById('quizContent').style.display = 'none';
   document.getElementById('scoreCard').classList.add('show');
-
   document.getElementById('scoreValue').textContent = `${score}/${total}`;
   document.getElementById('scoreText').textContent = `You scored ${score} out of ${total}`;
-
+  
   const percentage = Math.round((score / total) * 100);
   let message = '';
-
+  
   if (percentage === 100) {
     message = '🏆 Perfect! You are a star student!';
   } else if (percentage >= 80) {
@@ -217,7 +238,6 @@ function showScoreCard(score, total) {
   } else {
     message = "💪 Don't give up! Try again and learn more.";
   }
-
   document.getElementById('performanceMsg').textContent = message;
 }
 
@@ -249,7 +269,6 @@ document.getElementById('backMenuBtn').addEventListener('click', closeQuiz);
 window.addEventListener('load', () => {
   reloadProgress();
   refreshDashboardUI();
-
   const essayBox = document.getElementById('nadiaComposition');
   if (essayBox) {
     essayBox.value = localStorage.getItem(STORAGE_KEYS.essay) || '';
