@@ -56,6 +56,14 @@ const imageBase = {
   pala: 'https://githubusercontent.com',
   rider: 'https://githubusercontent.com',
   kivoi: 'https://githubusercontent.com'
+
+  // ADD YOUR NEW CROPPED IMAGE LINKS HERE:
+  eye: 'https://githubusercontent.com',
+  birds: 'https://githubusercontent.com',
+  puppets: 'https://githubusercontent.com',
+  flute: 'https://githubusercontent.com',
+  bat: 'https://githubusercontent.com',
+  relay: 'https://githubusercontent.com'
 };
 // Comprehensive subject evaluation repositories
 const generatorBank = {
