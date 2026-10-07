@@ -52,18 +52,18 @@ function answerIsCorrect(studentAnswer, correctAnswer) {
 
 // Remote server file path designations for dynamic visual assets
 const imageBase = {
-  kenya: 'https://githubusercontent.com',
-  pala: 'https://githubusercontent.com',
-  rider: 'https://githubusercontent.com',
-  kivoi: 'https://githubusercontent.com'
+  kenya: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/kenya-map.png',
+  pala: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/pala-map.png',
+  rider: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/motorcycle-rider.PNG',
+  kivoi: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/kivoi-wa-mwendwa.PNG',
 
   // ADD YOUR NEW CROPPED IMAGE LINKS HERE:
-  eye: 'https://githubusercontent.com',
-  birds: 'https://githubusercontent.com',
-  puppets: 'https://githubusercontent.com',
-  flute: 'https://githubusercontent.com',
-  bat: 'https://githubusercontent.com',
-  relay: 'https://githubusercontent.com'
+  eye: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/eye.png',
+  birds: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/birds.png',
+  puppets: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/puppets.png',
+  flute: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/flute.png',
+  bat: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/bat.png',
+  relay: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/relay.png'
 };
 // Comprehensive subject evaluation repositories
 const generatorBank = {
