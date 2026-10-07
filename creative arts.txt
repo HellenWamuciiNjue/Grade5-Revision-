@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uthiru Genesis Grade 5 SBA Study App</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #1e40af;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--bg-main);
+      color: var(--text-dark);
+      line-height: 1.6;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 20px 16px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    @media (min-width: 700px) {
+      .subject-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .subject-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
+      border-color: var(--primary);
+    }
+
+    .sub-info h3 {
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .sub-info p {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .progress-tracker {
+      display: inline-block;
+      background: var(--bg-main);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-top: 8px;
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .composition-box {
+      background: white;
+      border: 2px dashed var(--primary);
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .composition-box h4 {
+      color: var(--primary);
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .composition-box p {
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      resize: vertical;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    #saveEssayBtn {
+      width: 100%;
+      margin-top: 12px;
+      border: none;
+      background: var(--success);
+      color: white;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .quiz-view {
+      display: none;
+      animation: slideIn 0.35s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .back-btn, .gen-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      background: #eef2ff;
+      color: var(--text-dark);
+    }
+
+    .gen-btn {
+      background: var(--success);
+      color: white;
+    }
+
+    #quizTitle {
+      font-size: 1.2rem;
+      color: var(--primary);
+      flex: 1;
+      text-align: center;
+      min-width: 150px;
+    }
+
+    .question-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .question-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .question-image {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      display: block;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #edf2f7;
+    }
+
+    .answer-input {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .answer-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .feedback-box {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .feedback-correct {
+      display: block;
+      background: #ecfdf5;
+      color: var(--success);
+      border: 2px solid var(--success);
+    }
+
+    .feedback-incorrect {
+      display: block;
+      background: #fef2f2;
+      color: var(--danger);
+      border: 2px solid var(--danger);
+    }
+
+    .submit-quiz-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .score-card {
+      display: none;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 16px;
+      padding: 26px 18px;
+      text-align: center;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 20px rgba(37,99,235,0.18);
+    }
+
+    .score-card.show {
+      display: block;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      margin: 16px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+    }
+
+    .score-details {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+
+    .performance-message {
+      background: rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.95rem;
+    }
+
+    .retry-btn {
+      background: white;
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 14px;
+      margin-right: 10px;
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.3rem;
+      }
+
+      .quiz-header {
+        flex-direction: column;
+      }
+
+      .back-btn, .gen-btn {
+        width: 100%;
+      }
+
+      #quizTitle {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎓 UTHIRU GENESIS SCHOOLS</h1>
+    <p>Grade 5 KNEC SBA Term 3 Revision App</p>
+  </header>
+
+  <div class="container">
+    <div id="dashboard">
+      <div class="timetable-section">
+        <div class="day-title" style="font-size:1rem; color:#1e40af; font-weight:700; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; border-left:4px solid #2563eb; padding-left:10px;">
+          Grade 5 Active Revision Subjects
+        </div>
+
+        <div class="subject-grid">
+          <div class="subject-card">
+            <div class="sub-info">
+              <h3>English (Language)</h3>
+              <p>Reading Comprehension & Grammar</p>
+              <p class="progress-tracker" id="prog-English">0 / 0</p>
+            </div>
+            <button class="start-btn" data-subject="English">▶ Start Practice</button>
+          </div>
+
+          <div class="subject-card">
+            <div class="sub-info">
+              <h3>C.R.E.</h3>
+              <p>Christian Religious Education</p>
+              <p class="progress-tracker" id="prog-CRE">0 / 0</p>
+            </div>
+            <button class="start-btn" data-subject="CRE">▶ Start Practice</button>
+          </div>
+
+          <div class="subject-card">
+            <div class="sub-info">
+              <h3>Social Studies</h3>
+              <p>Kenya & Pala Area Geography</p>
+              <p class="progress-tracker" id="prog-SocialStudies">0 / 0</p>
+            </div>
+            <button class="start-btn" data-subject="SocialStudies">▶ Start Practice</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="composition-box">
+        <h4>✍️ Task 5: English Creative Composition</h4>
+        <p>Write about a time when you solved a problem. Describe the problem, what you did, and how you felt.</p>
+        <textarea id="nadiaComposition" placeholder="Write your story here..."></textarea>
+        <button id="saveEssayBtn">💾 Save Story to Memory</button>
+      </div>
+    </div>
+
+    <div id="quizContainer" class="quiz-view">
+      <div id="scoreCard" class="score-card">
+        <h2>Assessment Complete! 🎉</h2>
+        <div class="score-circle" id="scoreValue">0/0</div>
+        <div class="score-details">
+          <strong id="scoreText">You scored 0 out of 0</strong>
+        </div>
+        <div class="performance-message" id="performanceMsg"></div>
+        <button class="retry-btn" id="retryBtn">↻ Try Again</button>
+        <button class="retry-btn" id="backMenuBtn" style="background: rgba(255,255,255,0.2); color: white;">⬅ Back to Menu</button>
+      </div>
+
+      <div id="quizContent">
+        <div class="quiz-header">
+          <button class="back-btn" id="closeQuizBtn">⬅ Back</button>
+          <h2 id="quizTitle">Subject</h2>
+          <button class="gen-btn" id="reloadBtn">🔄 Reload</button>
+        </div>
+        <div id="questionsWrapper"></div>
+        <button id="masterSubmitBtn" class="submit-quiz-btn">✓ Finish & Grade Exam</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = { progress: 'nadiaProgress', essay: 'nadiaEssay' };
+    const defaultProgress = { English: 0, CRE: 0, SocialStudies: 0 };
+    let currentSubject = '';
+    let activeQuestionsCache = [];
+    let studyProgress = { ...defaultProgress };
+
+    function safeLoadJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return (raw && JSON.parse(raw)) || fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function reloadProgress() {
+      const saved = safeLoadJson(STORAGE_KEYS.progress, defaultProgress);
+      studyProgress = { ...defaultProgress, ...saved };
+    }
+
+    function normalizeAnswer(value) {
+      return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function answerIsCorrect(studentAnswer, correctAnswer) {
+      const student = normalizeAnswer(studentAnswer);
+      const expected = normalizeAnswer(correctAnswer);
+
+      if (!student || !expected) return false;
+
+      const choices = expected.split('/').map(choice => normalizeAnswer(choice));
+      return choices.some(choice => choice === student || student.includes(choice) || choice.includes(student));
+    }
+
+    const imageBase = {
+      kenya: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/kenya-map.png.PNG',
+      pala: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/pala-map.png.jpeg',
+      rider: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/motorcycle-rider.PNG',
+      kivoi: 'https://raw.githubusercontent.com/HellenWamuciiNjue/Grade5-Revision-/main/kivoi-wa-mwendwa.PNG'
+    };
+
+    const generatorBank = {
+      English: () => [
+        { q: '1. During the cleaning activity, the pupils collected __________', a: 'dry leaves, plastic bottles, and papers / dry leaves / plastic bottles' },
+        { q: '2. Why did Moraa empty the old tin?', a: 'because stagnant water could attract mosquitoes / to prevent mosquitoes' },
+        { q: '3. What is likely to happen if the pupils continue keeping the school clean?', a: 'the compound will always remain clean / it will stay clean' },
+        { q: '4. The word "stagnant" means:', a: 'standing still / not flowing / motionless' },
+        { q: '5. Where did Lekupe spend his school holiday?', a: 'in the countryside / at his grandmother\'s home' },
+        { q: '6. What can we learn about Lekupe?', a: 'he is responsible / hardworking / helpful' },
+        { q: '7. What would happen if Lekupe had not watered the vegetables?', a: 'the vegetables would have dried up / they would die' },
+        { q: '8. The word "immediately" means:', a: 'quickly / at once / right away' },
+        { q: '9. Why did Naisula call the number on the puppy\'s collar?', a: 'to find the owner / to contact the owner' },
+        { q: '10. What would happen if the puppy had no collar?', a: 'the owner would not be found / it would remain lost' },
+        { q: '11. Which sentence is true about Naisula?', a: 'she took the puppy to the owner / she was kind' },
+        { q: '12. What lesson do we learn from Naisula?', a: 'kindness to animals / being helpful / caring' },
+        { q: `<img class="question-image" src="${imageBase.kivoi}" alt="Kivoi wa Mwendwa portrait"><br><b>Q13.</b> During a visit in a museum, a Grade 5 learner took the photograph below of Kivoi Wa Mwendwa from a portrait hung on the museum wall and later displayed it in class during a discussion on qualities of traditional leaders in Kenya. Which quality is being shown?', a: 'wisdom / respect / leadership / knowledge / courage / honesty' },
+        { q: '14. Why did Mukami suggest a watering timetable?', a: 'so trees would stay healthy / to care for the trees' },
+        { q: '15. What happens if learners continue caring for trees?', a: 'the school will have shade / the place will be shaded' },
+        { q: '16. "Seedlings" refers to:', a: 'young trees / small plants / young plants' },
+        { q: '17. Why warn learners not to step on young plants?', a: 'to prevent them from breaking / to protect them' },
+        { q: '18. The children stayed indoors _________ it was raining.', a: 'because / for / as' },
+        { q: '19. Mary wanted to play, _________ her mother asked her to finish homework.', a: 'but / however' },
+        { q: '20. There were _________ pupils waiting outside.', a: 'a lot of / many' },
+        { q: '21. Please add _________ salt to the soup.', a: 'a little / little' },
+        { q: '22. This is the _________ exciting book I have read.', a: 'most / the most' },
+        { q: '23. A car is usually _________ expensive than a bicycle.', a: 'more / much more' },
+        { q: '24. We saw a _________ of birds flying.', a: 'flock / group' },
+        { q: '25. The farmer saw a _________ of cattle.', a: 'herd / group' },
+        { q: '26. Jane introduced _________', a: 'herself / herself to the class' },
+        { q: '27. The pupils cleaned the classroom by _________', a: 'themselves' },
+        { q: '28. This pencil is _________ pencil.', a: 'my / my pencil' },
+        { q: '29. Peter hurt _________ hand.', a: 'his / his hand' },
+        { q: '30. The children _________ reading when the teacher entered.', a: 'were / were reading' },
+        { q: '31. Every morning, our class _________ the day with prayer.', a: 'begins / starts' }
+      ],
+
+      CRE: () => [
+        { q: 'Who built an ark by God\'s command?', a: 'Noah' },
+        { q: 'List one fruit of the Holy Spirit (Galatians 5:22-23).', a: 'love / joy / peace / patience / kindness / goodness / faithfulness / gentleness / self-control' },
+        { q: 'Name the mountain where Moses received the Ten Commandments.', a: 'Mount Sinai' },
+        { q: 'Which Christian value means being truthful and sincere?', a: 'Honesty' },
+        { q: 'What was the name of Abraham\'s wife?', a: 'Sarah' },
+        { q: 'Where was Jesus Christ born?', a: 'Bethlehem' },
+        { q: 'Who was the first king of Israel?', a: 'Saul' },
+        { q: 'How many disciples did Jesus choose?', a: '12' },
+        { q: 'What is the first book of the Old Testament?', a: 'Genesis' },
+        { q: 'Which miracle did Jesus perform at Cana of Galilee?', a: 'turning water into wine / water into wine' }
+      ],
+
+      SocialStudies: () => [
+        { q: `<img class="question-image" src="${imageBase.pala}" alt="Pala Area Map"><br><b>Q1</b> List one natural resource found in the Pala area.`, a: 'rivers / forests / soil / water / minerals' },
+        { q: `<img class="question-image" src="${imageBase.pala}" alt="Pala Area Map"><br><b>Q2</b> State one use of the river in the area.`, a: 'watering crops / fishing / transport / drinking water' },
+        { q: `<img class="question-image" src="${imageBase.pala}" alt="Pala Area Map"><br><b>Q3</b> Give one reason why people settle near a river.`, a: 'easy water supply / farming / transport / fertile soil' },
+        { q: '<b>Q4</b> Rain received is below 250 mm yearly. What type of climate is this?', a: 'hot and dry / desert / arid / semi-arid' },
+        { q: '<b>Q5</b> State one major effect of high population density in Kenya.', a: 'pressure on resources / overcrowding / unemployment / poor housing' },
+        { q: '<b>Q6</b> Give one method of instruction in African traditional education.', a: 'apprenticeship / storytelling / demonstration / oral teaching / observation' },
+        { q: `<img class="question-image" src="${imageBase.kenya}" alt="Kenya Map"><br><b>Q8</b> Which country borders Kenya to the north?`, a: 'Ethiopia / ethiopia' },
+        { q: `<img class="question-image" src="${imageBase.kenya}" alt="Kenya Map"><br><b>Q9</b> Which country is found to the south of Kenya?`, a: 'Tanzania / tanzania' },
+        { q: `<img class="question-image" src="${imageBase.kenya}" alt="Kenya Map"><br><b>Q10</b> Which ocean borders the east of Kenya?`, a: 'Indian Ocean / indian ocean' },
+        { q: `<img class="question-image" src="${imageBase.rider}" alt="Motorcycle rider"><br><b>Q12</b> Apart from helmets, what other safety precaution should riders take?`, a: 'observe traffic rules / follow road signs / drive carefully / use lights' },
+        { q: `<img class="question-image" src="${imageBase.kivoi}" alt="Kivoi wa Mwendwa portrait"><br><b>Q13</b> What quality of a traditional leader does this portrait show?`, a: 'wisdom / leadership / respect / knowledge / courage / honesty' },
+        { q: '<b>Q14</b> State one function of the council of elders (Njuri Ncheke).', a: 'settling disputes / making laws / advising leaders / protecting community' },
+        { q: '<b>Q15</b> What other factor promotes national unity besides celebrations?', a: 'national language / education system / sports / common citizenship' },
+        { q: '<b>Q16</b> List one basic human right guaranteed to children in Kenya.', a: 'right to education / healthcare / protection / food / shelter' }
+      ]
+    };
+
+    <h1>Grade 5 Creative Arts Examination (October 2026)</h1>
+
+    <!-- SECTION A: ART AND CRAFT -->
+    <h2>SECTION A: WRITTEN TASKS — PART I: ART AND CRAFT</h2>
+    
+    <div class="answer">
+        <div class="question">1. Study the drawing below. Identify two shading techniques used in the drawing. (2 marks)</div>
+        <!-- Replace 'shading-eye.png' with your cropped image of the eye drawing -->
+        <img class="exam-img" src="shading-eye.png" alt="Shading Eye Drawing Question 1">
+        <ul class="points-list">
+            <li><b>Cross-hatching</b> (used in deep crease shadows).</li>
+            <li><b>Smudging / Blending</b> (used for smooth skin transitions).</li>
+        </ul>
+    </div>
+
+    <div class="answer">
+        <div class="question">2. Grade 5 learners were required to paint part of the Art room wall purple. However, only primary paint colours were available in the store. Identify the two colours they would mix to produce purple. (2 marks)</div>
+        <p>The two colors are <b>Blue</b> and <b>Red</b>.</p>
+    </div>
+
+    <div class="answer">
+        <div class="question">3. The pictures below show steps in wood carving, but they are mixed up. Arrange the pictures labelled I, II, III and IV in the correct order to show the wood carving process. (2 marks)</div>
+        <!-- Replace 'wood-carving.png' with your cropped image of the wood carving steps -->
+        <img class="exam-img" src="wood-carving.png" alt="Wood Carving Steps Question 3">
+        <p>Correct order: <b>IV</b> &rarr; <b>II</b> &rarr; <b>I</b> &rarr; <b>III</b></p>
+    </div>
+
+    <div class="answer">
+        <div class="question">4. The puppets below are used in different performances. Give two ways in which the puppets can be operated during a show. (2 marks)</div>
+        <!-- Replace 'glove-puppets.png' with your cropped image of the red and blue puppets -->
+        <img class="exam-img" src="glove-puppets.png" alt="Glove Puppets Question 4">
+        <ul class="points-list">
+            <li><b>Inserting the hand</b> fully inside the puppet body cavity.</li>
+            <li><b>Moving fingers</b> inside to control the mouth and head movements.</li>
+        </ul>
+    </div>
+
+    <div class="answer">
+        <div class="question">5. A learner found it easier to make a stencil of letter C than letter D. What should the learner do so that the middle part of letter D does not fall out? (2 marks)</div>
+        <p>The learner should leave small uncut connecting pieces of material called <b>bridges (or ties)</b> to anchor the inner loop to the outer sheet.</p>
+    </div>
+
+
+    <!-- PART II: MUSIC -->
+    <h2>PART II: MUSIC</h2>
+
+    <div class="answer">
+        <div class="question">6. Below is a diagram of a Kenyan wind instrument with parts labelled X and Y. Study it and answer the questions that follow:</div>
+        <!-- Replace 'wind-instrument.png' with your cropped image of the traditional flute -->
+        <img class="exam-img" src="wind-instrument.png" alt="Kenyan Wind Instrument Question 6">
+        <p><b>(a) Name the community that plays this instrument:</b> The <b>Digo community</b> (or Mijikenda).</p>
+        <p><b>(b) State the functions of the parts labelled X and Y:</b></p>
+        <ul class="points-list">
+            <li><b>X (Blow hole / Embouchure):</b> Where air is blown to split and create sound waves.</li>
+            <li><b>Y (Open end):</b> Serves as the sound exit and escape route for air currents.</li>
+        </ul>
+        <p><b>(c) Name two locally available materials that are commonly used to make this instrument:</b></p>
+        <ul class="points-list">
+            <li><b>Bamboo</b> stems.</li>
+            <li><b>Reeds</b> (or plastic PVC pipes).</li>
+        </ul>
+    </div>
+
+    <div class="answer">
+        <div class="question">7. Learners clapped a rhythm containing two crotchets. The teacher then asked them to replace the crotchets with one note of equal duration.</div>
+        <p><b>(a) Name the note value:</b> <b>Minim</b> (Half note).</p>
+        <p><b>(b) Write its French rhythm name:</b> <b>Ta-aa</b></p>
+    </div>
+
+    <div class="answer">
+        <div class="question">8. During a school cultural day, Grade 5 learners watched a group perform a Kenyan folk dance... Explain how the following components helped make the folk dance meaningful and effective: (3 marks)</div>
+        <ul class="points-list">
+            <li><b>(i) Songs:</b> Communicate the central message, theme, and storytelling of the dance.</li>
+            <li><b>(ii) Costumes:</b> Authenticate the cultural identity and roles of the community performers.</li>
+            <li><b>(iii) Drum Accompaniment:</b> Standardizes the rhythm, speed, and synchronized timing of choreography steps.</li>
+        </ul>
+    </div>
+
+
+    <!-- PART III: PHYSICAL AND HEALTH EDUCATION -->
+    <h2>PART III: PHYSICAL AND HEALTH EDUCATION</h2>
+
+    <div class="answer">
+        <div class="question">9. Football Match Scenarios:</div>
+        <p><b>(a) A player was awarded a penalty kick during a football match. Name one type of kick that would be suitable for taking the penalty kick.</b> <b>Instep kick</b> (inside of the foot kick) for maximized precision.</p>
+        <p><b>(b) During a football match, a player received a fast-moving ball rolling along the ground from a teammate. Which ball-stopping technique would have been most suitable for the player to use?</b> <b>Sole trap</b> (or inside-of-foot trap).</p>
+        <p><b>(c) Explain how the player would stop the ball successfully using the technique identified in (b).</b> The player lifts the foot slightly, angles toes upward, and cushions the ball under the <b>sole of the shoe</b> to absorb its momentum.</p>
+    </div>
+
+    <div class="answer">
+        <div class="question">10. a) Grade 5 learner was given the following bat to use during a rounders game. Name the function of each of the parts labelled A and B. (2 marks)</div>
+        <!-- Replace 'rounders-bat.png' with your cropped image of the rounders bat -->
+        <img class="exam-img" src="rounders-bat.png" alt="Rounders Bat Question 10">
+        <ul class="points-list">
+            <li><b>i) A (Handle/Grip):</b> Provides secure hand placement and control.</li>
+            <li><b>ii) B (Barrel/Hitting end):</b> Provides the wide surface area to hit the ball.</li>
+        </ul>
+        <p><b>b) During a rounders game, your school team was fielding. State what the fielders should do to help their team prevent the batting team from scoring.</b> Fielders must quickly catch the ball in the air to <b>dismiss the batter</b>, or throw it cleanly to a post baseman.</p>
+    </div>
+
+    <div class="answer">
+        <div class="question">11. During a relay race, two athletes exchanged the baton as shown by the arrow in the picture below.</div>
+        <!-- Replace 'baton-exchange.png' with your cropped image of the relay runners -->
+        <img class="exam-img" src="baton-exchange.png" alt="Baton Exchange Question 11">
+        <p><b>a) Name the type of baton exchange shown in the picture:</b> <b>Non-visual baton exchange</b> (using the upsweep/downsweep motion).</p>
+        <p><b>b) Explain how athletes can improve the baton exchange during the race:</b> By practicing rhythmic synchronization and maintaining <b>maximum acceleration speed</b> inside the takeover zone.</p>
+    </div>
+
+
+    <!-- SECTION B: PRACTICAL -->
+    <h2>SECTION B: PRACTICAL</h2>
+
+    <div class="practical-box">
+        <div class="question">12. Look at the picture below of a stack of books. Draw an atlas and a dictionary from observation using the picture as a guide. (15 marks)</div>
+        <!-- Replace 'books-stack.png' with your cropped image of the stacked books -->
+        <img class="exam-img" src="books-stack.png" alt="Books Stack Question 12">
+        <ul class="points-list">
+            <li>Draw an <b>atlas and dictionary stack</b> from life observation.</li>
+            <li>Fill the space evenly across an <b>A4 plain paper sheet</b>.</li>
+            <li>Apply color utilizing the transparent <b>wash technique</b>.</li>
+
+    function refreshDashboardUI() {
+      Object.keys(defaultProgress).forEach(subject => {
+        const element = document.getElementById(`prog-${subject}`);
+        if (!element) return;
+
+        const totalQuestions = generatorBank[subject] ? generatorBank[subject]().length : 0;
+        const score = studyProgress[subject];
+        element.textContent = `${score} / ${totalQuestions}`;
+        element.style.color = (score >= totalQuestions && totalQuestions > 0) ? 'var(--success)' : 'var(--primary)';
+      });
+    }
+
+    function startQuizAnimation(subject) {
+      currentSubject = subject;
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('quizContainer').style.display = 'block';
+      document.getElementById('scoreCard').classList.remove('show');
+      document.getElementById('quizContent').style.display = 'block';
+
+      const quizTitle = document.getElementById('quizTitle');
+      quizTitle.textContent = `Loading ${subject}...`;
+
+      setTimeout(() => {
+        quizTitle.textContent = subject;
+        generateNewSet();
+      }, 500);
+    }
+
+    function closeQuiz() {
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('quizContainer').style.display = 'none';
+    }
+
+    function generateNewSet() {
+      const wrapper = document.getElementById('questionsWrapper');
+      wrapper.innerHTML = '';
+      document.getElementById('masterSubmitBtn').style.display = 'block';
+
+      if (!currentSubject || !generatorBank[currentSubject]) return;
+
+      activeQuestionsCache = generatorBank[currentSubject]();
+
+      activeQuestionsCache.forEach((item, index) => {
+        const box = document.createElement('div');
+        box.className = 'question-box';
+        box.id = `q-box-${index}`;
+
+        box.innerHTML = `
+          <div class="question-text">Q${index + 1}. ${item.q}</div>
+          <input type="text" class="answer-input" id="input-${index}" placeholder="Type your answer here..." autocomplete="off">
+          <div class="feedback-box" id="feedback-${index}"></div>
+        `;
+
+        wrapper.appendChild(box);
+      });
+    }
+
+    function gradeCurrentQuiz() {
+      let correctCount = 0;
+      const totalQuestions = activeQuestionsCache.length;
+
+      activeQuestionsCache.forEach((item, index) => {
+        const inputEl = document.getElementById(`input-${index}`);
+        const feedbackEl = document.getElementById(`feedback-${index}`);
+
+        if (!inputEl || !feedbackEl) return;
+
+        const studentAnswer = inputEl.value.trim();
+        const correctAnswer = String(item.a || '').trim();
+        const isCorrect = answerIsCorrect(studentAnswer, correctAnswer);
+
+        inputEl.disabled = true;
+        feedbackEl.style.display = 'block';
+
+        if (isCorrect) {
+          correctCount++;
+          feedbackEl.className = 'feedback-box feedback-correct';
+          feedbackEl.innerHTML = '✓ Correct!';
+        } else {
+          feedbackEl.className = 'feedback-box feedback-incorrect';
+          feedbackEl.innerHTML = `✗ Incorrect. Correct: <b>${item.a}</b>`;
+        }
+      });
+
+      if (currentSubject && Object.prototype.hasOwnProperty.call(studyProgress, currentSubject)) {
+        studyProgress[currentSubject] = correctCount;
+        localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(studyProgress));
+        refreshDashboardUI();
+      }
+
+      showScoreCard(correctCount, totalQuestions);
+    }
+
+    function showScoreCard(score, total) {
+      document.getElementById('quizContent').style.display = 'none';
+      document.getElementById('scoreCard').classList.add('show');
+
+      document.getElementById('scoreValue').textContent = `${score}/${total}`;
+      document.getElementById('scoreText').textContent = `You scored ${score} out of ${total}`;
+
+      const percentage = Math.round((score / total) * 100);
+      let message = '';
+
+      if (percentage === 100) {
+        message = '🏆 Perfect! You are a star student!';
+      } else if (percentage >= 80) {
+        message = '⭐ Excellent work! Keep it up!';
+      } else if (percentage >= 60) {
+        message = '👍 Good effort! Review the weak areas.';
+      } else if (percentage >= 40) {
+        message = '📚 Need more practice. Keep learning!';
+      } else {
+        message = '💪 Don\'t give up! Try again and learn more.';
+      }
+
+      document.getElementById('performanceMsg').textContent = message;
+    }
+
+    function retryQuiz() {
+      document.getElementById('scoreCard').classList.remove('show');
+      document.getElementById('quizContent').style.display = 'block';
+      generateNewSet();
+    }
+
+    document.querySelectorAll('.start-btn').forEach(button => {
+      button.addEventListener('click', (event) => {
+        startQuizAnimation(event.target.dataset.subject);
+      });
+    });
+
+    document.getElementById('saveEssayBtn').addEventListener('click', () => {
+      const essayText = document.getElementById('nadiaComposition').value || '';
+      localStorage.setItem(STORAGE_KEYS.essay, essayText);
+      alert('✓ Story essay saved safely!');
+    });
+
+    document.getElementById('closeQuizBtn').addEventListener('click', closeQuiz);
+    document.getElementById('reloadBtn').addEventListener('click', generateNewSet);
+    document.getElementById('masterSubmitBtn').addEventListener('click', gradeCurrentQuiz);
+    document.getElementById('retryBtn').addEventListener('click', retryQuiz);
+    document.getElementById('backMenuBtn').addEventListener('click', closeQuiz);
+
+    window.addEventListener('load', () => {
+      reloadProgress();
+      refreshDashboardUI();
+
+      const essayBox = document.getElementById('nadiaComposition');
+      if (essayBox) {
+        essayBox.value = localStorage.getItem(STORAGE_KEYS.essay) || '';
+      }
+    });
+  </script>
+</body>
+</html>
